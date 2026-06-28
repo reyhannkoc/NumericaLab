@@ -54,7 +54,7 @@ export default function FunctionPlot({
         y: markers.map((m) => m.y),
         text: markers.map((m) => m.label),
         type: 'scatter' as const,
-        mode: 'markers+text' as const,
+        mode: 'text+markers' as const,
         textposition: 'top center',
         marker: { color: markers.map((m) => m.color), size: 10, symbol: 'circle' },
         showlegend: false,
@@ -63,7 +63,7 @@ export default function FunctionPlot({
 
   return (
     <Plot
-      data={[...traces, ...markerTrace]}
+      data={[...traces, ...markerTrace] as Plotly.Data[]}
       layout={{
         ...DARK_LAYOUT,
         title: title ? { text: title, font: { color: '#e2e8f0', size: 14 } } : undefined,

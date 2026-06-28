@@ -10,7 +10,7 @@ const PRECISIONS: FloatPrecision[] = ['float16', 'float32', 'float64']
 
 export default function ErrorAnalysisLab() {
   const [phenomenon, setPhenomenon] = useState<FloatPhenomenon>('rounding')
-  const { inputA, setInputA, inputB, setInputB, analysisA, analysisB, sumAnalysis, analyzeAt } = useFloatAnalysis()
+  const { inputA, setInputA, inputB, setInputB, analysisA, sumAnalysis } = useFloatAnalysis()
 
   const currentPhenomenon = FLOAT_PHENOMENA.find((p) => p.id === phenomenon)!
 

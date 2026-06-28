@@ -1,39 +1,72 @@
-﻿import LessonPageShell from '@components/educational/LessonPageShell'
-import TheorySection from '@components/educational/TheorySection'
-import type { LessonSection } from '@/types/numerical.types'
+import { useState, useCallback } from 'react'
+import LessonPage from '@components/lesson/LessonPage'
+import { LAGRANGE_CONFIG } from '@/config/lessons/lagrange'
+import InterpolationVisualization from '@components/interpolation/InterpolationVisualization'
+import InterpolationStepAnimation from '@components/interpolation/InterpolationStepAnimation'
+import InterpolationPlayground from '@components/interpolation/InterpolationPlayground'
+import { interpolationService } from '@/services/interpolationService'
+import type { InterpolationResult } from '@/types/api.types'
 
-const SECTIONS: LessonSection[] = [
-  { id: 'theory',       title: 'Theory',                  type: 'theory' },
-  { id: 'math',         title: 'Mathematical Background',  type: 'math' },
-  { id: 'algorithm',    title: 'Algorithm',                type: 'algorithm' },
-  { id: 'playground',   title: 'Interactive Playground',   type: 'playground' },
-  { id: 'animation',    title: 'Animation',                type: 'animation' },
-  { id: 'convergence',  title: 'Convergence Analysis',     type: 'performance' },
-  { id: 'comparison',   title: 'Method Comparison',        type: 'comparison' },
-  { id: 'applications', title: 'Engineering Applications', type: 'applications' },
-  { id: 'practice',     title: 'Practice',                 type: 'practice' },
-  { id: 'summary',      title: 'Summary',                  type: 'summary' },
-]
+function parseNumbers(s: string): number[] {
+  return s.split(',').map((t) => parseFloat(t.trim())).filter(isFinite)
+}
 
-// TODO: Implement full lesson content
-export default function Page() {
+export default function LagrangePage() {
+  const [xPoints,      setXPoints]      = useState('0,1,2,3,4')
+  const [yPoints,      setYPoints]      = useState('0,1,4,9,16')
+  const [queryPoints,  setQueryPoints]  = useState('0.5,1.5,2.5,3.5')
+  const [result,       setResult]       = useState<InterpolationResult | null>(null)
+  const [isLoading,    setIsLoading]    = useState(false)
+
+  const handleCompute = useCallback(async () => {
+    const xs = parseNumbers(xPoints)
+    const ys = parseNumbers(yPoints)
+    const qs = parseNumbers(queryPoints)
+    if (xs.length < 2 || xs.length !== ys.length || qs.length === 0) return
+
+    setIsLoading(true)
+    try {
+      const res = await interpolationService.interpolate({
+        x_points: xs,
+        y_points: ys,
+        query_points: qs,
+        method: 'lagrange',
+      })
+      setResult(res)
+    } catch (err) {
+      console.error('[LagrangePage] compute error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [xPoints, yPoints, queryPoints])
+
+  const handleReset = useCallback(() => setResult(null), [])
+
   return (
-    <LessonPageShell
-      title="Lagrange Interpolation"
-      subtitle="Polynomial through n+1 points using basis polynomials"
-      complexity="intermediate"
-      tags={["polynomial"]}
-      moduleColor=""
-      sections={SECTIONS}
-    >
-      <TheorySection id="theory" title="Theory">
-        <p className="text-slate-300">
-          Full lesson content for <strong className="text-white">Lagrange Interpolation</strong> will be implemented here.
-          This page follows the standard NumericaLab lesson structure: Theory → Math → Algorithm →
-          Playground → Animation → Convergence → Comparison → Applications → Practice → Summary.
-        </p>
-      </TheorySection>
-      {/* Additional sections to be implemented */}
-    </LessonPageShell>
+    <LessonPage
+      config={LAGRANGE_CONFIG}
+      primaryMethod="lagrange"
+      renderVisualization={() => (
+        <InterpolationVisualization method="lagrange" />
+      )}
+      renderAnimation={() => (
+        <InterpolationStepAnimation method="lagrange" result={result} />
+      )}
+      renderPlayground={() => (
+        <InterpolationPlayground
+          method="lagrange"
+          xPoints={xPoints}
+          yPoints={yPoints}
+          queryPoints={queryPoints}
+          onXPointsChange={(v) => { setXPoints(v); handleReset() }}
+          onYPointsChange={(v) => { setYPoints(v); handleReset() }}
+          onQueryPointsChange={(v) => { setQueryPoints(v); handleReset() }}
+          result={result}
+          isLoading={isLoading}
+          onCompute={handleCompute}
+          onReset={handleReset}
+        />
+      )}
+    />
   )
 }

@@ -313,7 +313,7 @@ function ChallengeCard({ ch }: { ch: typeof CHALLENGES[0] }) {
           <div className="text-xs text-slate-400">{ch.description}</div>
         </div>
         <div className="flex items-center gap-2 shrink-0 ml-3">
-          <span className={clsx('text-xs px-2 py-0.5 rounded-full border font-medium', colors[ch.difficulty])}>{ch.difficulty}</span>
+          <span className={clsx('text-xs px-2 py-0.5 rounded-full border font-medium', colors[ch.difficulty as keyof typeof colors])}>{ch.difficulty}</span>
           <span className="text-slate-500 text-sm">{open ? '▲' : '▼'}</span>
         </div>
       </button>

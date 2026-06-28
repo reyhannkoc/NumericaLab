@@ -67,10 +67,10 @@ export default function PerformancePage() {
                   <p className="text-slate-300 text-sm">{data.summary}</p>
                   <div className="flex gap-4 mt-3 text-sm">
                     <span className="text-slate-500">
-                      Best accuracy: <strong className="text-emerald-300">{data.best_accuracy}</strong>
+                      Best accuracy: <strong className="text-emerald-300">{data.results.reduce((b, r) => (r.accuracy ?? -Infinity) > (b.accuracy ?? -Infinity) ? r : b, data.results[0])?.method ?? '—'}</strong>
                     </span>
                     <span className="text-slate-500">
-                      Fastest: <strong className="text-brand-300">{data.fastest}</strong>
+                      Fastest: <strong className="text-brand-300">{data.winner}</strong>
                     </span>
                   </div>
                 </Card>

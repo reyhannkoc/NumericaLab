@@ -1,7 +1,6 @@
 import { type ReactNode, useEffect, useRef, useState, useCallback } from 'react'
 import { MathJaxContext } from 'better-react-mathjax'
 import type { LessonConfig, LessonSectionId } from '@/types/lesson.types'
-import { LESSON_SECTIONS } from '@/config/lessonSections'
 
 import LessonHeader from './sections/LessonHeader'
 import MotivationSection from './sections/MotivationSection'
