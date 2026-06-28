@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --scrollbar-width: 6px;
+    --scrollbar-track: #1e293b;
+    --scrollbar-thumb: #475569;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface text-slate-100;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: var(--scrollbar-width); height: var(--scrollbar-width); }
+  ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+  /* MathJax override */
+  .MathJax { color: inherit !important; }
+
+  /* Selection */
+  ::selection { background: rgba(99, 102, 241, 0.35); color: #e0e7ff; }
+}
+
+@layer components {
+  /* Glassmorphism card */
+  .glass-card {
+    @apply bg-surface-card border border-surface-border rounded-xl backdrop-blur-sm;
+  }
+
+  /* Section labels */
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-slate-500;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent;
+  }
+
+  /* Interactive formula display */
+  .formula-box {
+    @apply glass-card p-4 my-4 overflow-x-auto text-center text-lg;
+  }
+
+  /* Algorithm step indicator */
+  .step-badge {
+    @apply inline-flex items-center justify-center w-7 h-7 rounded-full
+           bg-brand-600 text-white text-xs font-bold shrink-0;
+  }
+
+  /* Sidebar nav item */
+  .sidebar-item {
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium
+           text-slate-400 hover:text-white hover:bg-surface-hover transition-colors;
+  }
+  .sidebar-item.active {
+    @apply text-white bg-brand-600/20 border border-brand-600/30;
+  }
+
+  /* Module color dots */
+  .module-dot {
+    @apply w-2 h-2 rounded-full shrink-0;
+  }
+
+  /* Iteration table */
+  .iter-table {
+    @apply w-full text-sm border-collapse;
+  }
+  .iter-table th {
+    @apply text-left px-3 py-2 text-slate-400 font-medium border-b border-surface-border;
+  }
+  .iter-table td {
+    @apply px-3 py-2 font-mono border-b border-surface-border/50;
+  }
+  .iter-table tr:last-child td {
+    @apply text-brand-300 font-semibold border-b-0;
+  }
+
+  /* Parameter control group */
+  .param-group {
+    @apply flex flex-col gap-1.5;
+  }
+  .param-label {
+    @apply text-xs text-slate-400 flex items-center justify-between;
+  }
+  .param-value {
+    @apply text-xs font-mono text-brand-300;
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image: var(--tw-gradient-stops, linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px));
+    background-size: 40px 40px;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

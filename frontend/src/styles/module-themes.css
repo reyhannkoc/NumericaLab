@@ -1,0 +1,12 @@
+/* Per-module color theme overrides for accent elements */
+
+[data-module="floating-point"] { --module-color: #f59e0b; }
+[data-module="root-finding"]   { --module-color: #10b981; }
+[data-module="interpolation"]  { --module-color: #3b82f6; }
+[data-module="differentiation"]{ --module-color: #8b5cf6; }
+[data-module="integration"]    { --module-color: #ec4899; }
+[data-module="linear-systems"] { --module-color: #14b8a6; }
+[data-module="lu-decomposition"]{ --module-color: #f97316; }
+[data-module="optimization"]   { --module-color: #06b6d4; }
+[data-module="ode"]            { --module-color: #84cc16; }
+[data-module="performance"]    { --module-color: #e11d48; }
