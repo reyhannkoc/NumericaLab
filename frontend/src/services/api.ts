@@ -1,7 +1,14 @@
 import axios from 'axios'
 
+// In development, Vite proxies /api → localhost:8000 (see vite.config.ts).
+// In production, set VITE_API_BASE_URL to the full backend origin, e.g.:
+//   VITE_API_BASE_URL=https://numericalab-api.onrender.com
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  : '/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_URL,
   timeout: 30_000,
   headers: { 'Content-Type': 'application/json' },
 })

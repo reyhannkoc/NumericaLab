@@ -1,6 +1,10 @@
 import { type ReactNode, useEffect, useRef, useState, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import { MathJaxContext } from 'better-react-mathjax'
 import type { LessonConfig, LessonSectionId } from '@/types/lesson.types'
+import { useProgress } from '@/contexts/ProgressContext'
+import { QUIZ_REGISTRY } from '@/config/quizzes'
+import QuizSection from '@components/learning/QuizSection'
 
 import LessonHeader from './sections/LessonHeader'
 import MotivationSection from './sections/MotivationSection'
@@ -23,43 +27,21 @@ const MATHJAX_CONFIG = {
 
 interface LessonPageProps {
   config: LessonConfig
-  /**
-   * Render props for the three interactive sections that require
-   * lesson-specific logic (chart, animation, playground).
-   * All three are optional — the page renders gracefully without them.
-   */
   renderVisualization?: () => ReactNode
   renderAnimation?: () => ReactNode
   renderPlayground?: () => ReactNode
-  /** Primary method name used to highlight column in ComparisonCenter */
   primaryMethod?: string
-  /** Live error values fed from the playground computation */
   liveErrors?: {
     absoluteError?: number
     relativeError?: number
     iterations?: number
   }
-  /** Live performance metrics from the playground computation */
   livePerformance?: {
     measuredMs?: number
     actualIterations?: number
   }
 }
 
-/**
- * Universal lesson page orchestrator.
- *
- * Every lesson page must:
- *   1. Define a LessonConfig object
- *   2. Wrap it with <LessonPage config={config} ... />
- *   3. Pass render props for the three interactive sections
- *
- * This component owns:
- *   - MathJax context
- *   - IntersectionObserver for active-section tracking
- *   - Progress sidebar rendering
- *   - Ordered section layout
- */
 export default function LessonPage({
   config,
   renderVisualization,
@@ -71,6 +53,14 @@ export default function LessonPage({
 }: LessonPageProps) {
   const [currentSection, setCurrentSection] = useState<LessonSectionId | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
+
+  const { pathname } = useLocation()
+  const { visitLesson, markPlaygroundUsed, submitQuiz } = useProgress()
+
+  // Track visits and playground exposure
+  useEffect(() => {
+    visitLesson(pathname)
+  }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Which sections this lesson actually renders
   const activeSections: LessonSectionId[] = [
@@ -91,7 +81,10 @@ export default function LessonPage({
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            setCurrentSection(entry.target.id as LessonSectionId)
+            const id = entry.target.id as LessonSectionId
+            setCurrentSection(id)
+            // Mark playground used when user scrolls into the playground section
+            if (id === 'playground') markPlaygroundUsed()
           }
         }
       },
@@ -105,11 +98,18 @@ export default function LessonPage({
     })
 
     return () => obs.disconnect()
-  }, [activeSections.join(',')])
+  }, [activeSections.join(',')]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const navigateTo = useCallback((id: LessonSectionId) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [])
+
+  // Quiz questions for this lesson (undefined if no quiz exists)
+  const quizQuestions = QUIZ_REGISTRY[pathname]
+
+  const handleQuizComplete = useCallback((score: number, total: number) => {
+    submitQuiz(pathname, score, total)
+  }, [pathname, submitQuiz])
 
   return (
     <MathJaxContext config={MATHJAX_CONFIG}>
@@ -123,13 +123,10 @@ export default function LessonPage({
             <TheorySection config={config.theory} />
             <MathFoundation config={config.mathFoundation} />
 
-            {/* Interactive sections — rendered by individual lesson pages */}
             {renderVisualization?.()}
             {renderAnimation?.()}
             {renderPlayground?.()}
 
-            {/* Algorithm Execution slot — rendered by individual lesson pages via renderPlayground */}
-            {/* Error & Performance */}
             <ErrorAnalysis
               config={config.errorAnalysis}
               absoluteError={liveErrors?.absoluteError}
@@ -142,7 +139,6 @@ export default function LessonPage({
               actualIterations={livePerformance?.actualIterations}
             />
 
-            {/* Optional comparison */}
             {config.comparison && (
               <ComparisonCenter config={config.comparison} primaryMethod={primaryMethod} />
             )}
@@ -152,6 +148,15 @@ export default function LessonPage({
             <PracticeProblems problems={config.practiceProblems} />
             <InteractiveChallenges challenges={config.interactiveChallenges} />
             <LessonSummary config={config.summary} />
+
+            {/* ── Knowledge Check (auto-appended after summary) ── */}
+            {quizQuestions && (
+              <QuizSection
+                questions={quizQuestions}
+                lessonTitle={config.header.title}
+                onComplete={handleQuizComplete}
+              />
+            )}
           </div>
         </main>
 

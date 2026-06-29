@@ -1,39 +1,55 @@
-﻿import LessonPageShell from '@components/educational/LessonPageShell'
-import TheorySection from '@components/educational/TheorySection'
-import type { LessonSection } from '@/types/numerical.types'
+import { useState, useCallback } from 'react'
+import LessonPage from '@components/lesson/LessonPage'
+import { BACKWARD_DIFF_CONFIG } from '@/config/lessons/backwardDifference'
+import DifferentiationVisualization from '@components/differentiation/DifferentiationVisualization'
+import DifferentiationAnimation from '@components/differentiation/DifferentiationAnimation'
+import DifferentiationPlayground from '@components/differentiation/DifferentiationPlayground'
+import { differentiationService } from '@/services/differentiationService'
+import type { DifferentiationResult } from '@/types/api.types'
 
-const SECTIONS: LessonSection[] = [
-  { id: 'theory',       title: 'Theory',                  type: 'theory' },
-  { id: 'math',         title: 'Mathematical Background',  type: 'math' },
-  { id: 'algorithm',    title: 'Algorithm',                type: 'algorithm' },
-  { id: 'playground',   title: 'Interactive Playground',   type: 'playground' },
-  { id: 'animation',    title: 'Animation',                type: 'animation' },
-  { id: 'convergence',  title: 'Convergence Analysis',     type: 'performance' },
-  { id: 'comparison',   title: 'Method Comparison',        type: 'comparison' },
-  { id: 'applications', title: 'Engineering Applications', type: 'applications' },
-  { id: 'practice',     title: 'Practice',                 type: 'practice' },
-  { id: 'summary',      title: 'Summary',                  type: 'summary' },
-]
+export default function BackwardDifferencePage() {
+  const [expression, setExpression] = useState('sin(x)')
+  const [xPoint,     setXPoint]     = useState(1.0)
+  const [h,          setH]          = useState(1e-5)
+  const [result,     setResult]     = useState<DifferentiationResult | null>(null)
+  const [isLoading,  setIsLoading]  = useState(false)
 
-// TODO: Implement full lesson content
-export default function Page() {
+  const handleCompute = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const res = await differentiationService.differentiate({ expression, x_point: xPoint, h, method: 'backward' })
+      setResult(res)
+    } catch (err) {
+      console.error('[BackwardDifferencePage] compute error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [expression, xPoint, h])
+
+  const handleReset = useCallback(() => setResult(null), [])
+
   return (
-    <LessonPageShell
-      title="Backward Difference"
-      subtitle="First-order backward derivative approximation"
-      complexity="introductory"
-      tags={["O(h)"]}
-      moduleColor=""
-      sections={SECTIONS}
-    >
-      <TheorySection id="theory" title="Theory">
-        <p className="text-slate-300">
-          Full lesson content for <strong className="text-white">Backward Difference</strong> will be implemented here.
-          This page follows the standard NumericaLab lesson structure: Theory → Math → Algorithm →
-          Playground → Animation → Convergence → Comparison → Applications → Practice → Summary.
-        </p>
-      </TheorySection>
-      {/* Additional sections to be implemented */}
-    </LessonPageShell>
+    <LessonPage
+      config={BACKWARD_DIFF_CONFIG}
+      primaryMethod="backward"
+      liveErrors={result ? { absoluteError: result.absolute_error, relativeError: result.relative_error } : undefined}
+      renderVisualization={() => <DifferentiationVisualization method="backward" />}
+      renderAnimation={() => <DifferentiationAnimation method="backward" />}
+      renderPlayground={() => (
+        <DifferentiationPlayground
+          method="backward"
+          expression={expression}
+          xPoint={xPoint}
+          h={h}
+          onExpressionChange={(v) => { setExpression(v); handleReset() }}
+          onXPointChange={(v) => { setXPoint(v); handleReset() }}
+          onHChange={(v) => { setH(v); handleReset() }}
+          result={result}
+          isLoading={isLoading}
+          onCompute={handleCompute}
+          onReset={handleReset}
+        />
+      )}
+    />
   )
 }

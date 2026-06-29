@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { MathJaxContext } from 'better-react-mathjax'
 import App from './App'
+import { ProgressProvider } from './contexts/ProgressContext'
 import './styles/globals.css'
 
 const mathJaxConfig = {
@@ -18,7 +19,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <MathJaxContext config={mathJaxConfig} version={3}>
-        <App />
+        <ProgressProvider>
+          <App />
+        </ProgressProvider>
       </MathJaxContext>
     </BrowserRouter>
   </React.StrictMode>,

@@ -1,39 +1,61 @@
-﻿import LessonPageShell from '@components/educational/LessonPageShell'
-import TheorySection from '@components/educational/TheorySection'
-import type { LessonSection } from '@/types/numerical.types'
+import { useState, useCallback } from 'react'
+import LessonPage from '@components/lesson/LessonPage'
+import { GOLDEN_SECTION_CONFIG } from '@/config/lessons/goldenSection'
+import OptimizationVisualization from '@components/optimization/OptimizationVisualization'
+import OptimizationAnimation from '@components/optimization/OptimizationAnimation'
+import OptimizationPlayground from '@components/optimization/OptimizationPlayground'
+import { optimizationService } from '@/services/optimizationService'
+import type { OptimizationResult } from '@/types/api.types'
 
-const SECTIONS: LessonSection[] = [
-  { id: 'theory',       title: 'Theory',                  type: 'theory' },
-  { id: 'math',         title: 'Mathematical Background',  type: 'math' },
-  { id: 'algorithm',    title: 'Algorithm',                type: 'algorithm' },
-  { id: 'playground',   title: 'Interactive Playground',   type: 'playground' },
-  { id: 'animation',    title: 'Animation',                type: 'animation' },
-  { id: 'convergence',  title: 'Convergence Analysis',     type: 'performance' },
-  { id: 'comparison',   title: 'Method Comparison',        type: 'comparison' },
-  { id: 'applications', title: 'Engineering Applications', type: 'applications' },
-  { id: 'practice',     title: 'Practice',                 type: 'practice' },
-  { id: 'summary',      title: 'Summary',                  type: 'summary' },
-]
+export default function GoldenSectionPage() {
+  const [expression, setExpression] = useState('(x-2)**2')
+  const [a, setA]   = useState(0)
+  const [b, setB]   = useState(4)
+  const [x0, setX0] = useState(3)
+  const [alpha, setAlpha] = useState(0.3)
+  const [result, setResult] = useState<OptimizationResult | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-// TODO: Implement full lesson content
-export default function Page() {
+  const handleCompute = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const res = await optimizationService.optimize({
+        expression, method: 'golden_section', a, b,
+        tolerance: 1e-10, max_iterations: 200,
+      })
+      setResult(res)
+    } catch (err) {
+      console.error('[GoldenSectionPage] error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [expression, a, b])
+
+  const handleReset = useCallback(() => setResult(null), [])
+
   return (
-    <LessonPageShell
-      title="Golden Section Search"
-      subtitle="Bracket minimum without derivatives"
-      complexity="introductory"
-      tags={["bracket", "derivative-free"]}
-      moduleColor=""
-      sections={SECTIONS}
-    >
-      <TheorySection id="theory" title="Theory">
-        <p className="text-slate-300">
-          Full lesson content for <strong className="text-white">Golden Section Search</strong> will be implemented here.
-          This page follows the standard NumericaLab lesson structure: Theory → Math → Algorithm →
-          Playground → Animation → Convergence → Comparison → Applications → Practice → Summary.
-        </p>
-      </TheorySection>
-      {/* Additional sections to be implemented */}
-    </LessonPageShell>
+    <LessonPage
+      config={GOLDEN_SECTION_CONFIG}
+      primaryMethod="golden_section"
+      liveErrors={result ? { absoluteError: Math.abs(result.optimum_value) } : undefined}
+      renderVisualization={() => <OptimizationVisualization method="golden_section" />}
+      renderAnimation={() => <OptimizationAnimation method="golden_section" />}
+      renderPlayground={() => (
+        <OptimizationPlayground
+          method="golden_section"
+          expression={expression}
+          a={a} b={b} x0={x0} alpha={alpha} tolerance={1e-10}
+          onExpressionChange={v => { setExpression(v); handleReset() }}
+          onAChange={v => { setA(v); handleReset() }}
+          onBChange={v => { setB(v); handleReset() }}
+          onX0Change={setX0}
+          onAlphaChange={setAlpha}
+          result={result}
+          isLoading={isLoading}
+          onCompute={handleCompute}
+          onReset={handleReset}
+        />
+      )}
+    />
   )
 }

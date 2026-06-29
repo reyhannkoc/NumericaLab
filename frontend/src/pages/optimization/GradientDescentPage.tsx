@@ -1,39 +1,61 @@
-﻿import LessonPageShell from '@components/educational/LessonPageShell'
-import TheorySection from '@components/educational/TheorySection'
-import type { LessonSection } from '@/types/numerical.types'
+import { useState, useCallback } from 'react'
+import LessonPage from '@components/lesson/LessonPage'
+import { GRADIENT_DESCENT_CONFIG } from '@/config/lessons/gradientDescent'
+import OptimizationVisualization from '@components/optimization/OptimizationVisualization'
+import OptimizationAnimation from '@components/optimization/OptimizationAnimation'
+import OptimizationPlayground from '@components/optimization/OptimizationPlayground'
+import { optimizationService } from '@/services/optimizationService'
+import type { OptimizationResult } from '@/types/api.types'
 
-const SECTIONS: LessonSection[] = [
-  { id: 'theory',       title: 'Theory',                  type: 'theory' },
-  { id: 'math',         title: 'Mathematical Background',  type: 'math' },
-  { id: 'algorithm',    title: 'Algorithm',                type: 'algorithm' },
-  { id: 'playground',   title: 'Interactive Playground',   type: 'playground' },
-  { id: 'animation',    title: 'Animation',                type: 'animation' },
-  { id: 'convergence',  title: 'Convergence Analysis',     type: 'performance' },
-  { id: 'comparison',   title: 'Method Comparison',        type: 'comparison' },
-  { id: 'applications', title: 'Engineering Applications', type: 'applications' },
-  { id: 'practice',     title: 'Practice',                 type: 'practice' },
-  { id: 'summary',      title: 'Summary',                  type: 'summary' },
-]
+export default function GradientDescentPage() {
+  const [expression, setExpression] = useState('(x-2)**2')
+  const [a, setA]   = useState(0)
+  const [b, setB]   = useState(4)
+  const [x0, setX0] = useState(3.5)
+  const [alpha, setAlpha] = useState(0.3)
+  const [result, setResult] = useState<OptimizationResult | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-// TODO: Implement full lesson content
-export default function Page() {
+  const handleCompute = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const res = await optimizationService.optimize({
+        expression, method: 'gradient_descent', x0, learning_rate: alpha,
+        tolerance: 1e-10, max_iterations: 500,
+      })
+      setResult(res)
+    } catch (err) {
+      console.error('[GradientDescentPage] error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [expression, x0, alpha])
+
+  const handleReset = useCallback(() => setResult(null), [])
+
   return (
-    <LessonPageShell
-      title="Gradient Descent"
-      subtitle="Follow the negative gradient to the minimum"
-      complexity="intermediate"
-      tags={["gradient", "ML-relevant"]}
-      moduleColor=""
-      sections={SECTIONS}
-    >
-      <TheorySection id="theory" title="Theory">
-        <p className="text-slate-300">
-          Full lesson content for <strong className="text-white">Gradient Descent</strong> will be implemented here.
-          This page follows the standard NumericaLab lesson structure: Theory → Math → Algorithm →
-          Playground → Animation → Convergence → Comparison → Applications → Practice → Summary.
-        </p>
-      </TheorySection>
-      {/* Additional sections to be implemented */}
-    </LessonPageShell>
+    <LessonPage
+      config={GRADIENT_DESCENT_CONFIG}
+      primaryMethod="gradient_descent"
+      liveErrors={result ? { absoluteError: result.converged ? 0 : 1 } : undefined}
+      renderVisualization={() => <OptimizationVisualization method="gradient_descent" />}
+      renderAnimation={() => <OptimizationAnimation method="gradient_descent" />}
+      renderPlayground={() => (
+        <OptimizationPlayground
+          method="gradient_descent"
+          expression={expression}
+          a={a} b={b} x0={x0} alpha={alpha} tolerance={1e-10}
+          onExpressionChange={v => { setExpression(v); handleReset() }}
+          onAChange={setA}
+          onBChange={setB}
+          onX0Change={v => { setX0(v); handleReset() }}
+          onAlphaChange={v => { setAlpha(v); handleReset() }}
+          result={result}
+          isLoading={isLoading}
+          onCompute={handleCompute}
+          onReset={handleReset}
+        />
+      )}
+    />
   )
 }

@@ -1,39 +1,59 @@
-﻿import LessonPageShell from '@components/educational/LessonPageShell'
-import TheorySection from '@components/educational/TheorySection'
-import type { LessonSection } from '@/types/numerical.types'
+import { useState, useCallback } from 'react'
+import LessonPage from '@components/lesson/LessonPage'
+import { SIMPSONS_CONFIG } from '@/config/lessons/simpsons'
+import IntegrationVisualization from '@components/integration/IntegrationVisualization'
+import IntegrationAnimation from '@components/integration/IntegrationAnimation'
+import IntegrationPlayground from '@components/integration/IntegrationPlayground'
+import { integrationService } from '@/services/integrationService'
+import type { IntegrationResult } from '@/types/api.types'
 
-const SECTIONS: LessonSection[] = [
-  { id: 'theory',       title: 'Theory',                  type: 'theory' },
-  { id: 'math',         title: 'Mathematical Background',  type: 'math' },
-  { id: 'algorithm',    title: 'Algorithm',                type: 'algorithm' },
-  { id: 'playground',   title: 'Interactive Playground',   type: 'playground' },
-  { id: 'animation',    title: 'Animation',                type: 'animation' },
-  { id: 'convergence',  title: 'Convergence Analysis',     type: 'performance' },
-  { id: 'comparison',   title: 'Method Comparison',        type: 'comparison' },
-  { id: 'applications', title: 'Engineering Applications', type: 'applications' },
-  { id: 'practice',     title: 'Practice',                 type: 'practice' },
-  { id: 'summary',      title: 'Summary',                  type: 'summary' },
-]
+export default function SimpsonsPage() {
+  const [expression, setExpression] = useState('sin(x)')
+  const [a,           setA]           = useState(0)
+  const [b,           setB]           = useState(Math.PI)
+  const [n,           setN]           = useState(10)
+  const [result,      setResult]      = useState<IntegrationResult | null>(null)
+  const [isLoading,   setIsLoading]   = useState(false)
 
-// TODO: Implement full lesson content
-export default function Page() {
+  const handleCompute = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const nEven = n % 2 === 0 ? n : n + 1
+      const res = await integrationService.integrate({ expression, a, b, n: nEven, method: 'simpsons' })
+      setResult(res)
+    } catch (err) {
+      console.error('[SimpsonsPage] compute error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [expression, a, b, n])
+
+  const handleReset = useCallback(() => setResult(null), [])
+
   return (
-    <LessonPageShell
-      title="Simpson's Rule"
-      subtitle="Parabolic fitting over sub-intervals"
-      complexity="intermediate"
-      tags={["O(h4)"]}
-      moduleColor=""
-      sections={SECTIONS}
-    >
-      <TheorySection id="theory" title="Theory">
-        <p className="text-slate-300">
-          Full lesson content for <strong className="text-white">Simpson's Rule</strong> will be implemented here.
-          This page follows the standard NumericaLab lesson structure: Theory → Math → Algorithm →
-          Playground → Animation → Convergence → Comparison → Applications → Practice → Summary.
-        </p>
-      </TheorySection>
-      {/* Additional sections to be implemented */}
-    </LessonPageShell>
+    <LessonPage
+      config={SIMPSONS_CONFIG}
+      primaryMethod="simpsons"
+      liveErrors={result ? { absoluteError: result.absolute_error, relativeError: result.relative_error } : undefined}
+      renderVisualization={() => <IntegrationVisualization method="simpsons" />}
+      renderAnimation={() => <IntegrationAnimation method="simpsons" />}
+      renderPlayground={() => (
+        <IntegrationPlayground
+          method="simpsons"
+          expression={expression}
+          a={a}
+          b={b}
+          n={n}
+          onExpressionChange={v => { setExpression(v); handleReset() }}
+          onAChange={v => { setA(v); handleReset() }}
+          onBChange={v => { setB(v); handleReset() }}
+          onNChange={v => { setN(v); handleReset() }}
+          result={result}
+          isLoading={isLoading}
+          onCompute={handleCompute}
+          onReset={handleReset}
+        />
+      )}
+    />
   )
 }

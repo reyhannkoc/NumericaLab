@@ -1,39 +1,66 @@
-﻿import LessonPageShell from '@components/educational/LessonPageShell'
-import TheorySection from '@components/educational/TheorySection'
-import type { LessonSection } from '@/types/numerical.types'
+import { useState, useCallback } from 'react'
+import LessonPage from '@components/lesson/LessonPage'
+import { GAUSSIAN_ELIMINATION_CONFIG } from '@/config/lessons/gaussianElimination'
+import LinearSystemVisualization from '@components/linear-systems/LinearSystemVisualization'
+import LinearSystemAnimation from '@components/linear-systems/LinearSystemAnimation'
+import LinearSystemPlayground from '@components/linear-systems/LinearSystemPlayground'
+import { linearSystemsService } from '@/services/linearSystemsService'
+import type { LinearSystemResult } from '@/types/api.types'
 
-const SECTIONS: LessonSection[] = [
-  { id: 'theory',       title: 'Theory',                  type: 'theory' },
-  { id: 'math',         title: 'Mathematical Background',  type: 'math' },
-  { id: 'algorithm',    title: 'Algorithm',                type: 'algorithm' },
-  { id: 'playground',   title: 'Interactive Playground',   type: 'playground' },
-  { id: 'animation',    title: 'Animation',                type: 'animation' },
-  { id: 'convergence',  title: 'Convergence Analysis',     type: 'performance' },
-  { id: 'comparison',   title: 'Method Comparison',        type: 'comparison' },
-  { id: 'applications', title: 'Engineering Applications', type: 'applications' },
-  { id: 'practice',     title: 'Practice',                 type: 'practice' },
-  { id: 'summary',      title: 'Summary',                  type: 'summary' },
-]
+export default function GaussianEliminationPage() {
+  const [size, setSize]       = useState<2|3>(3)
+  const [matrixA, setMatrixA] = useState([[4,-1,0],[-1,4,-1],[0,-1,4]])
+  const [vectorB, setVectorB] = useState([3,2,3])
+  const [result,  setResult]  = useState<LinearSystemResult | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-// TODO: Implement full lesson content
-export default function Page() {
+  const handleCompute = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const res = await linearSystemsService.solve({
+        matrix_a: matrixA,
+        vector_b: vectorB,
+        method: 'gaussian_elimination',
+      })
+      setResult(res)
+    } catch (err) {
+      console.error('[GaussianEliminationPage] error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [matrixA, vectorB])
+
+  const handleReset = useCallback(() => setResult(null), [])
+
   return (
-    <LessonPageShell
-      title="Gaussian Elimination"
-      subtitle="Row reduce to upper triangular form"
-      complexity="intermediate"
-      tags={["direct", "exact"]}
-      moduleColor=""
-      sections={SECTIONS}
-    >
-      <TheorySection id="theory" title="Theory">
-        <p className="text-slate-300">
-          Full lesson content for <strong className="text-white">Gaussian Elimination</strong> will be implemented here.
-          This page follows the standard NumericaLab lesson structure: Theory → Math → Algorithm →
-          Playground → Animation → Convergence → Comparison → Applications → Practice → Summary.
-        </p>
-      </TheorySection>
-      {/* Additional sections to be implemented */}
-    </LessonPageShell>
+    <LessonPage
+      config={GAUSSIAN_ELIMINATION_CONFIG}
+      primaryMethod="gaussian_elimination"
+      liveErrors={result ? { absoluteError: result.residual } : undefined}
+      renderVisualization={() => <LinearSystemVisualization method="gaussian_elimination" />}
+      renderAnimation={() => <LinearSystemAnimation method="gaussian_elimination" />}
+      renderPlayground={() => (
+        <LinearSystemPlayground
+          method="gaussian_elimination"
+          matrixA={matrixA}
+          vectorB={vectorB}
+          size={size}
+          onMatrixChange={a => { setMatrixA(a); handleReset() }}
+          onVectorChange={b => { setVectorB(b); handleReset() }}
+          onSizeChange={s => {
+            setSize(s)
+            if (s === 2) { setMatrixA([[4,-1],[-1,4]]); setVectorB([3,3]) }
+            else { setMatrixA([[4,-1,0],[-1,4,-1],[0,-1,4]]); setVectorB([3,2,3]) }
+            handleReset()
+          }}
+          solution={result?.solution ?? null}
+          iterations={null}
+          residual={result?.residual ?? null}
+          isLoading={isLoading}
+          onCompute={handleCompute}
+          onReset={handleReset}
+        />
+      )}
+    />
   )
 }

@@ -7,6 +7,8 @@ import LaboratoryLayout from '@layouts/LaboratoryLayout'
 import HomePage from '@pages/HomePage'
 import ModulesPage from '@pages/ModulesPage'
 import NotFoundPage from '@pages/NotFoundPage'
+import DashboardPage from '@pages/DashboardPage'
+import LearningPathPage from '@pages/LearningPathPage'
 
 // Laboratory pages
 import LaboratoryHub      from '@pages/laboratory/LaboratoryHub'
@@ -46,6 +48,7 @@ import ForwardDifferencePage from '@pages/differentiation/ForwardDifferencePage'
 import BackwardDifferencePage from '@pages/differentiation/BackwardDifferencePage'
 import CentralDifferencePage from '@pages/differentiation/CentralDifferencePage'
 import RichardsonPage from '@pages/differentiation/RichardsonPage'
+import DifferentiationComparisonPage from '@pages/differentiation/DifferentiationComparisonPage'
 
 // Integration sub-pages
 import TrapezoidalPage from '@pages/integration/TrapezoidalPage'
@@ -79,6 +82,8 @@ export default function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/modules" element={<ModulesPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/learning-path" element={<LearningPathPage />} />
       </Route>
 
       {/* Learning module routes — use ModuleLayout with sidebar */}
@@ -107,6 +112,7 @@ export default function App() {
         <Route path="/differentiation/backward" element={<BackwardDifferencePage />} />
         <Route path="/differentiation/central" element={<CentralDifferencePage />} />
         <Route path="/differentiation/richardson" element={<RichardsonPage />} />
+        <Route path="/differentiation/comparison" element={<DifferentiationComparisonPage />} />
 
         {/* Integration */}
         <Route path="/integration" element={<IntegrationPage />} />

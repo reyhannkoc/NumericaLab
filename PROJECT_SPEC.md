@@ -152,21 +152,25 @@ The website should assume that the user has zero previous knowledge.
 
 # Database
 
-Do NOT use any database.
+# Data Persistence
 
-Reason:
+This project does NOT use a traditional database.
 
-This project does not require:
+Instead, it uses browser LocalStorage for lightweight client-side persistence.
 
-- User authentication
-- User profiles
-- Progress tracking
-- Saved quizzes
-- Persistent data
+Stored locally:
 
-All calculations are performed in memory.
+- Learning progress
+- Lesson completion
+- Quiz scores
+- Achievement status
+- User preferences
 
----
+No user authentication is required.
+
+No cloud database is required.
+
+## All numerical calculations remain stateless and are performed in memory by the FastAPI backend.
 
 # High-Level Architecture
 
@@ -562,3 +566,130 @@ Summarize what was implemented.
 List remaining tasks.
 
 Wait for approval before continuing.
+
+# Learning System
+
+The platform should function as a complete educational environment.
+
+Features include:
+
+- Learning Dashboard
+- Learning Path
+- Lesson Progress Tracking
+- Interactive Quizzes
+- Achievement System
+- Recommended Next Lesson
+- Local Progress Storage
+
+The learning system exists only on the client side using LocalStorage.
+
+# Numerical Laboratory
+
+The platform contains a dedicated Numerical Laboratory.
+
+Students can:
+
+- Compare algorithms
+- Run experiments
+- Benchmark performance
+- Explore floating-point precision
+- Compare convergence
+- Investigate engineering scenarios
+
+The laboratory complements the lesson pages and encourages experimentation.
+
+# Deployment
+
+Frontend
+
+- React
+- Vite
+- Vercel
+
+Backend
+
+- FastAPI
+- Render
+
+Version Control
+
+- Git
+- GitHub
+
+Deployment must be fully automated through GitHub integration.
+
+# Environment Variables
+
+Frontend
+
+VITE_API_URL
+
+Backend
+
+CORS_ORIGINS
+
+No secrets should be hardcoded.
+
+Production and development environments must be configurable.
+
+# API Design
+
+RESTful architecture
+
+Each numerical module exposes its own endpoint.
+
+Example:
+
+/api/root-finding
+
+/api/interpolation
+
+/api/differentiation
+
+/api/integration
+
+/api/optimization
+
+All responses must be JSON.
+
+Errors must use consistent response models.
+
+# Performance Rules
+
+Every numerical algorithm should include:
+
+- Execution time
+- Iteration count
+- Memory considerations (when applicable)
+- Numerical stability discussion
+- Error estimation
+
+Whenever multiple algorithms solve the same problem, a comparison page should be provided.
+
+# Development Roadmap
+
+Completed
+
+✓ Floating Point Error Analysis
+
+✓ Root Finding
+
+✓ Interpolation
+
+Remaining
+
+4. Numerical Differentiation
+
+5. Numerical Integration
+
+6. Linear Systems
+
+7. LU Decomposition
+
+8. Optimization
+
+9. Ordinary Differential Equations
+
+10. Performance Analysis & Comparative Analysis
+
+Development must strictly follow this order.
