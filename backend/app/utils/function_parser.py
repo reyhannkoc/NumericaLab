@@ -9,6 +9,7 @@ no imports, no arbitrary code execution.
 """
 
 import math
+import re
 import numpy as np
 import sympy as sp
 from typing import Callable
@@ -40,17 +41,23 @@ _SAFE_NAMESPACE = {
 }
 
 
+_FORBIDDEN_WORDS = re.compile(r'\b(import|exec|eval|open|os|subprocess)\b')
+
+
+def _check_safe(expression: str) -> None:
+    lower = expression.lower()
+    if _FORBIDDEN_WORDS.search(lower):
+        raise ValueError("Expression contains a forbidden identifier")
+    if "__" in lower:
+        raise ValueError("Expression contains forbidden token: '__'")
+
+
 def parse_function(expression: str) -> Callable[[float], float]:
     """
     Parse a string expression of x into a Python callable.
     Raises ValueError on invalid or unsafe expressions.
     """
-    # Basic safety checks
-    forbidden = ["import", "exec", "eval", "open", "os", "__", "subprocess"]
-    expr_lower = expression.lower()
-    for token in forbidden:
-        if token in expr_lower:
-            raise ValueError(f"Expression contains forbidden token: '{token}'")
+    _check_safe(expression)
 
     try:
         code = compile(expression, "<expression>", "eval")
@@ -72,11 +79,7 @@ def parse_function(expression: str) -> Callable[[float], float]:
 
 def parse_function_xy(expression: str) -> Callable[[float, float], float]:
     """Parse a two-variable expression f(x, y) for ODE right-hand sides."""
-    forbidden = ["import", "exec", "eval", "open", "os", "__", "subprocess"]
-    expr_lower = expression.lower()
-    for token in forbidden:
-        if token in expr_lower:
-            raise ValueError(f"Expression contains forbidden token: '{token}'")
+    _check_safe(expression)
 
     try:
         code = compile(expression, "<expression>", "eval")

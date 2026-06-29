@@ -75,7 +75,7 @@ export default function FixedPointPage() {
     setIsLoading(true)
     try {
       const res = await rootFindingService.solve({
-        expression: gExpr + ' - x',   // f(x) = g(x) − x = 0 (backend expects f(x)=0 form)
+        expression: gExpr,
         method: 'fixed_point',
         x0,
         tolerance,

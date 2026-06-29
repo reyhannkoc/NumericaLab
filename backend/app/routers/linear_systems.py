@@ -16,41 +16,30 @@ def solve_system(req: LinearSystemRequest):
     if len(A) != len(b) or any(len(row) != len(b) for row in A):
         raise HTTPException(422, "Matrix A must be square and consistent with vector b.")
 
+    sol = res = ops = iters = None
     with timer_ms() as t:
         try:
             if req.method == LinearSolverMethod.gaussian_elimination:
                 sol, res, ops = gaussian_elimination(A, b)
-                return LinearSystemResult(
-                    solution=sol,
-                    residual=res,
-                    row_operations=ops,
-                    method=req.method,
-                    execution_time_ms=t["execution_time_ms"],
-                )
-
             elif req.method == LinearSolverMethod.gauss_seidel:
                 sol, iters, converged = gauss_seidel(A, b, req.x0, req.tolerance, req.max_iterations)
                 res = float(np.linalg.norm(np.array(A) @ np.array(sol) - np.array(b)))
-                return LinearSystemResult(
-                    solution=sol,
-                    residual=res,
-                    iterations=iters,
-                    method=req.method,
-                    execution_time_ms=t["execution_time_ms"],
-                )
-
             elif req.method == LinearSolverMethod.jacobi:
                 sol, iters, converged = jacobi(A, b, req.x0, req.tolerance, req.max_iterations)
                 res = float(np.linalg.norm(np.array(A) @ np.array(sol) - np.array(b)))
-                return LinearSystemResult(
-                    solution=sol,
-                    residual=res,
-                    iterations=iters,
-                    method=req.method,
-                    execution_time_ms=t["execution_time_ms"],
-                )
-
+            else:
+                raise HTTPException(422, f"Unknown method: {req.method}")
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(400, str(e))
 
-    raise HTTPException(422, f"Unknown method: {req.method}")
+    if req.method == LinearSolverMethod.gaussian_elimination:
+        return LinearSystemResult(
+            solution=sol, residual=res, row_operations=ops,
+            method=req.method, execution_time_ms=t["execution_time_ms"],
+        )
+    return LinearSystemResult(
+        solution=sol, residual=res, iterations=iters,
+        method=req.method, execution_time_ms=t["execution_time_ms"],
+    )

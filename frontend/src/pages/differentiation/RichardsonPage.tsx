@@ -177,9 +177,9 @@ export default function RichardsonPage() {
         level: i,
         h: hv.toExponential(4),
         central: (result.steps!.table[i]?.[0] ?? 0).toFixed(10),
-        richardson: (result.steps!.table[0]?.[i] ?? 0).toFixed(10),
+        richardson: (result.steps!.table[i]?.[i] ?? 0).toFixed(10),
         error: result.exact_derivative !== undefined
-          ? Math.abs((result.steps!.table[0]?.[i] ?? 0) - result.exact_derivative).toExponential(4)
+          ? Math.abs((result.steps!.table[i]?.[i] ?? 0) - result.exact_derivative).toExponential(4)
           : '—',
       }))
     : []
@@ -188,7 +188,7 @@ export default function RichardsonPage() {
     { key: 'level'      as keyof TableRow, header: 'Level' },
     { key: 'h'          as keyof TableRow, header: 'h' },
     { key: 'central'    as keyof TableRow, header: 'D(h) central' },
-    { key: 'richardson' as keyof TableRow, header: 'Richardson R[0][k]', highlight: true },
+    { key: 'richardson' as keyof TableRow, header: 'Richardson R[k][k]', highlight: true },
     { key: 'error'      as keyof TableRow, header: '|Error|' },
   ]
 
