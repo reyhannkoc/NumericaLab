@@ -20,9 +20,11 @@ export default function SecantPage() {
   const [curveX,    setCurveX]    = useState<number[]>([])
   const [curveY,    setCurveY]    = useState<number[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [error,     setError]     = useState<string | null>(null)
 
   const handleSolve = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const lo      = Math.min(x0, x1)
       const hi      = Math.max(x0, x1)
@@ -43,7 +45,7 @@ export default function SecantPage() {
       setCurveX(curve.x)
       setCurveY(curve.y)
     } catch (err) {
-      console.error('[SecantPage] solve error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
@@ -53,6 +55,7 @@ export default function SecantPage() {
     setResult(null)
     setCurveX([])
     setCurveY([])
+    setError(null)
   }, [])
 
   return (
@@ -91,6 +94,7 @@ export default function SecantPage() {
           isLoading={isLoading}
           onSolve={handleSolve}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

@@ -16,6 +16,8 @@ interface InteractivePlaygroundProps {
   onReset?: () => void
   isLoading?: boolean
   description?: string
+  /** Error message from the last solve attempt */
+  error?: string | null
 }
 
 export default function InteractivePlayground({
@@ -27,6 +29,7 @@ export default function InteractivePlayground({
   onReset,
   isLoading = false,
   description,
+  error,
 }: InteractivePlaygroundProps) {
   const meta = SECTION_MAP['playground']
 
@@ -95,7 +98,17 @@ export default function InteractivePlayground({
 
         {/* Results panel */}
         <div className="lg:col-span-3">
-          {results ?? (
+          {error ? (
+            <div className="glass-card p-5 h-full flex flex-col gap-3 min-h-[200px]">
+              <div className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-4">
+                <span className="mt-0.5 shrink-0 text-red-400">⚠</span>
+                <div>
+                  <p className="text-sm font-semibold text-red-400 mb-1">Computation Error</p>
+                  <p className="text-sm text-red-300/80 font-mono break-all">{error}</p>
+                </div>
+              </div>
+            </div>
+          ) : results ?? (
             <div className="glass-card p-5 h-full flex items-center justify-center
                             text-slate-500 text-sm italic min-h-[200px]">
               Configure parameters and click Run to see results.

@@ -32,6 +32,7 @@ export interface RootFindingPlaygroundProps {
   isLoading: boolean
   onSolve: () => void
   onReset: () => void
+  error?: string | null
 }
 
 // ─── Presets per method ───────────────────────────────────────────────────────
@@ -189,7 +190,7 @@ export default function RootFindingPlayground(props: RootFindingPlaygroundProps)
     x0, onX0Change, x1, onX1Change,
     tolerance, onToleranceChange,
     maxIterations, onMaxIterationsChange,
-    result, isLoading, onSolve, onReset,
+    result, isLoading, onSolve, onReset, error,
   } = props
 
   const presets = getPresets(method)
@@ -288,6 +289,7 @@ export default function RootFindingPlayground(props: RootFindingPlaygroundProps)
         onRun={onSolve}
         onReset={onReset}
         isLoading={isLoading}
+        error={error}
       />
 
       <AlgorithmExecution<IterRow>

@@ -19,9 +19,11 @@ export default function NewtonRaphsonPage() {
   const [curveX,    setCurveX]    = useState<number[]>([])
   const [curveY,    setCurveY]    = useState<number[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [error,     setError]     = useState<string | null>(null)
 
   const handleSolve = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const [res, curve] = await Promise.all([
         rootFindingService.solve({
@@ -37,7 +39,7 @@ export default function NewtonRaphsonPage() {
       setCurveX(curve.x)
       setCurveY(curve.y)
     } catch (err) {
-      console.error('[NewtonRaphsonPage] solve error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
@@ -47,6 +49,7 @@ export default function NewtonRaphsonPage() {
     setResult(null)
     setCurveX([])
     setCurveY([])
+    setError(null)
   }, [])
 
   return (
@@ -84,6 +87,7 @@ export default function NewtonRaphsonPage() {
           isLoading={isLoading}
           onSolve={handleSolve}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

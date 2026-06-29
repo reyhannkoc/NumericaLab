@@ -20,9 +20,11 @@ export default function BisectionPage() {
   const [curveX,    setCurveX]    = useState<number[]>([])
   const [curveY,    setCurveY]    = useState<number[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [error,     setError]     = useState<string | null>(null)
 
   const handleSolve = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const spread  = Math.max((b - a) * 0.3, 0.5)
       const plotMin = a - spread
@@ -41,7 +43,7 @@ export default function BisectionPage() {
       setCurveX(curve.x)
       setCurveY(curve.y)
     } catch (err) {
-      console.error('[BisectionPage] solve error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
@@ -51,6 +53,7 @@ export default function BisectionPage() {
     setResult(null)
     setCurveX([])
     setCurveY([])
+    setError(null)
   }, [])
 
   return (
@@ -89,6 +92,7 @@ export default function BisectionPage() {
           isLoading={isLoading}
           onSolve={handleSolve}
           onReset={handleReset}
+          error={error}
         />
       )}
     />
