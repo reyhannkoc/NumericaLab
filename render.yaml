@@ -29,6 +29,8 @@ services:
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     envVars:
+      - key: NODE_VERSION
+        value: 20
       - key: VITE_API_BASE_URL
         # Replace with your actual Render backend URL after first deploy.
         value: https://numericalab-api.onrender.com
