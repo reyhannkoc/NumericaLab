@@ -23,6 +23,7 @@ export interface DifferentiationPlaygroundProps {
   isLoading: boolean
   onCompute: () => void
   onReset: () => void
+  error?: string | null
 }
 
 // ─── Presets ──────────────────────────────────────────────────────────────────
@@ -126,7 +127,7 @@ function ErrorVsHChart({ expression, xPoint, method }: { expression: string; xPo
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function DifferentiationPlayground(props: DifferentiationPlaygroundProps) {
-  const { method, expression, xPoint, h, onExpressionChange, onXPointChange, onHChange, result, isLoading, onCompute, onReset } = props
+  const { method, expression, xPoint, h, onExpressionChange, onXPointChange, onHChange, result, isLoading, onCompute, onReset, error } = props
 
   const presets = method === 'forward' ? FORWARD_PRESETS : method === 'backward' ? BACKWARD_PRESETS : CENTRAL_PRESETS
   const color = METHOD_COLOR[method]
@@ -247,6 +248,7 @@ export default function DifferentiationPlayground(props: DifferentiationPlaygrou
         onRun={onCompute}
         onReset={onReset}
         isLoading={isLoading}
+        error={error}
       />
 
       <AlgorithmExecution<Row>

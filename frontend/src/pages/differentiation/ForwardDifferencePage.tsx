@@ -13,20 +13,22 @@ export default function ForwardDifferencePage() {
   const [h,          setH]          = useState(1e-5)
   const [result,     setResult]     = useState<DifferentiationResult | null>(null)
   const [isLoading,  setIsLoading]  = useState(false)
+  const [error,      setError]      = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const res = await differentiationService.differentiate({ expression, x_point: xPoint, h, method: 'forward' })
       setResult(res)
     } catch (err) {
-      console.error('[ForwardDifferencePage] compute error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [expression, xPoint, h])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   return (
     <LessonPage
@@ -48,6 +50,7 @@ export default function ForwardDifferencePage() {
           isLoading={isLoading}
           onCompute={handleCompute}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

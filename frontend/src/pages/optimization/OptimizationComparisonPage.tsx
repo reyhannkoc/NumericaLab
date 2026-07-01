@@ -32,10 +32,12 @@ export default function OptimizationComparisonPage() {
   const [caseIdx, setCaseIdx] = useState(0)
   const [results, setResults] = useState<ResultMap>({ golden_section: null, gradient_descent: null })
   const [loading, setLoading] = useState(false)
+  const [compError, setCompError] = useState<string | null>(null)
   const cs = CASE_STUDIES[caseIdx]
 
   const runComparison = useCallback(async () => {
     setLoading(true)
+    setCompError(null)
     try {
       const [gs, gd] = await Promise.all([
         optimizationService.optimize({ expression: cs.expr, method: 'golden_section', a: cs.a, b: cs.b, tolerance: 1e-10, max_iterations: 200 }),
@@ -43,7 +45,7 @@ export default function OptimizationComparisonPage() {
       ])
       setResults({ golden_section: gs, gradient_descent: gd })
     } catch (err) {
-      console.error('[OptimizationComparison] error:', err)
+      setCompError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
@@ -86,6 +88,12 @@ export default function OptimizationComparisonPage() {
         <h1 className="text-2xl font-bold text-white mb-1">Optimization: Method Comparison</h1>
         <p className="text-slate-400 text-sm">Golden Section (bracket, derivative-free) vs Gradient Descent (gradient-based)</p>
       </div>
+
+      {compError && (
+        <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          {compError}
+        </div>
+      )}
 
       <div className="glass-card p-5 space-y-4">
         <h2 className="text-lg font-semibold text-white">Select Test Function</h2>

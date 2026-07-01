@@ -255,6 +255,7 @@ export interface ODERequest {
   x_end: number
   h: number
   method: ODEMethod
+  exact_expression?: string
 }
 
 export type ODEMethod =

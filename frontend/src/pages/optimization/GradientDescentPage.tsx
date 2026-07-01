@@ -15,9 +15,11 @@ export default function GradientDescentPage() {
   const [alpha, setAlpha] = useState(0.3)
   const [result, setResult] = useState<OptimizationResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const res = await optimizationService.optimize({
         expression, method: 'gradient_descent', x0, learning_rate: alpha,
@@ -25,13 +27,13 @@ export default function GradientDescentPage() {
       })
       setResult(res)
     } catch (err) {
-      console.error('[GradientDescentPage] error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [expression, x0, alpha])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   return (
     <LessonPage
@@ -54,6 +56,7 @@ export default function GradientDescentPage() {
           isLoading={isLoading}
           onCompute={handleCompute}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

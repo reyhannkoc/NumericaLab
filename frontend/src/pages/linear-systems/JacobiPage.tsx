@@ -13,9 +13,11 @@ export default function JacobiPage() {
   const [vectorB, setVectorB] = useState([4,3,4])
   const [result,  setResult]  = useState<LinearSystemResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error,   setError]   = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const res = await linearSystemsService.solve({
         matrix_a: matrixA,
@@ -26,13 +28,13 @@ export default function JacobiPage() {
       })
       setResult(res)
     } catch (err) {
-      console.error('[JacobiPage] error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [matrixA, vectorB])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   return (
     <LessonPage
@@ -61,6 +63,7 @@ export default function JacobiPage() {
           isLoading={isLoading}
           onCompute={handleCompute}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

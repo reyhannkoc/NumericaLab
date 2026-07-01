@@ -97,22 +97,24 @@ export default function RichardsonPage() {
   const [h,          setH]          = useState(0.1)
   const [result,     setResult]     = useState<DifferentiationResult | null>(null)
   const [isLoading,  setIsLoading]  = useState(false)
+  const [error,      setError]      = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const res = await differentiationService.differentiate({
         expression, x_point: xPoint, h, method: 'richardson',
       })
       setResult(res)
     } catch (err) {
-      console.error('[RichardsonPage] error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [expression, xPoint, h])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   const applyPreset = (p: PlaygroundPreset) => {
     const v = p.params as Record<string, string | number>
@@ -311,6 +313,7 @@ export default function RichardsonPage() {
             onRun={handleCompute}
             onReset={handleReset}
             isLoading={isLoading}
+            error={error}
             description="Richardson extrapolation for numerical differentiation. Achieves O(h⁴) accuracy by combining D(h) and D(h/2) central difference estimates."
           />
           {richTable.length > 0 && (

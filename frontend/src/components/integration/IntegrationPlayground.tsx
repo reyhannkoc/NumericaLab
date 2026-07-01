@@ -22,6 +22,7 @@ export interface IntegrationPlaygroundProps {
   isLoading: boolean
   onCompute: () => void
   onReset: () => void
+  error?: string | null
 }
 
 // ─── Presets ──────────────────────────────────────────────────────────────────
@@ -93,7 +94,7 @@ type GaussRow = Record<string, unknown> & {
 export default function IntegrationPlayground({
   method, expression, a, b, n,
   onExpressionChange, onAChange, onBChange, onNChange,
-  result, isLoading, onCompute, onReset,
+  result, isLoading, onCompute, onReset, error,
 }: IntegrationPlaygroundProps) {
   const color = METHOD_COLOR[method]
   const label = METHOD_LABEL[method]
@@ -246,6 +247,7 @@ export default function IntegrationPlayground({
         onRun={onCompute}
         onReset={onReset}
         isLoading={isLoading}
+        error={error}
         description={`Compute ∫ f(x) dx from a to b using ${label}`}
       />
 

@@ -5,10 +5,10 @@ import { odeService } from '@/services/odeService'
 import type { ODEResult } from '@/types/api.types'
 
 const CASE_STUDIES = [
-  { label: 'dy/dx = y',         expr: 'y',            x0: 0, y0: 1, xEnd: 3, description: 'Exponential growth' },
-  { label: 'dy/dx = −y',        expr: '-y',           x0: 0, y0: 1, xEnd: 3, description: 'Exponential decay' },
-  { label: 'dy/dx = x + y',     expr: 'x + y',        x0: 0, y0: 1, xEnd: 2, description: 'Non-autonomous' },
-  { label: 'dy/dx = sin(x)−y',  expr: 'sin(x) - y',  x0: 0, y0: 0, xEnd: 4, description: 'Steady-state oscillation' },
+  { label: 'dy/dx = y',         expr: 'y',            x0: 0, y0: 1, xEnd: 3, description: 'Exponential growth',       exact: 'exp(x)' },
+  { label: 'dy/dx = −y',        expr: '-y',           x0: 0, y0: 1, xEnd: 3, description: 'Exponential decay',        exact: 'exp(-x)' },
+  { label: 'dy/dx = x + y',     expr: 'x + y',        x0: 0, y0: 1, xEnd: 2, description: 'Non-autonomous',           exact: '2*exp(x) - x - 1' },
+  { label: 'dy/dx = sin(x)−y',  expr: 'sin(x) - y',  x0: 0, y0: 0, xEnd: 4, description: 'Steady-state oscillation', exact: '(sin(x) - cos(x) + exp(-x)) / 2' },
 ]
 
 const METHODS: { key: 'euler' | 'runge_kutta_4'; label: string; color: string }[] = [
@@ -36,20 +36,22 @@ export default function ODEComparisonPage() {
   const [hIdx, setHIdx]       = useState(1)   // default h=0.25
   const [results, setResults] = useState<ResultMap>({ euler: null, runge_kutta_4: null })
   const [loading, setLoading] = useState(false)
+  const [compError, setCompError] = useState<string | null>(null)
   const cs = CASE_STUDIES[caseIdx]
   const h  = H_VALUES[hIdx]
 
   const runComparison = useCallback(async () => {
     setLoading(true)
+    setCompError(null)
     try {
-      const base = { expression: cs.expr, x0: cs.x0, y0: cs.y0, x_end: cs.xEnd, h }
+      const base = { expression: cs.expr, x0: cs.x0, y0: cs.y0, x_end: cs.xEnd, h, exact_expression: cs.exact }
       const [euler, rk4] = await Promise.all([
         odeService.solve({ ...base, method: 'euler' }),
         odeService.solve({ ...base, method: 'runge_kutta_4' }),
       ])
       setResults({ euler, runge_kutta_4: rk4 })
     } catch (err) {
-      console.error('[ODEComparison] error:', err)
+      setCompError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
@@ -114,6 +116,12 @@ export default function ODEComparisonPage() {
         <h1 className="text-2xl font-bold text-white mb-1">ODE: Method Comparison</h1>
         <p className="text-slate-400 text-sm">Euler (1st order) vs Runge-Kutta 4 (4th order) — accuracy and error analysis</p>
       </div>
+
+      {compError && (
+        <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          {compError}
+        </div>
+      )}
 
       <div className="glass-card p-5 space-y-4">
         <h2 className="text-lg font-semibold text-white">Test Function &amp; Parameters</h2>

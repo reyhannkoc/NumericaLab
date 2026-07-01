@@ -55,11 +55,13 @@ export default function LinearComparisonPage() {
     jacobi: null,
   })
   const [loading, setLoading] = useState(false)
+  const [compError, setCompError] = useState<string | null>(null)
 
   const sys = SYSTEMS[sysIdx]
 
   const runComparison = useCallback(async () => {
     setLoading(true)
+    setCompError(null)
     try {
       const [ge, gs, j] = await Promise.all([
         linearSystemsService.solve({ matrix_a: sys.a, vector_b: sys.b, method: 'gaussian_elimination' }),
@@ -68,7 +70,7 @@ export default function LinearComparisonPage() {
       ])
       setResults({ gaussian_elimination: ge, gauss_seidel: gs, jacobi: j })
     } catch (err) {
-      console.error('[LinearComparison] error:', err)
+      setCompError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
@@ -117,6 +119,12 @@ export default function LinearComparisonPage() {
         <h1 className="text-2xl font-bold text-white mb-1">Linear Systems: Method Comparison</h1>
         <p className="text-slate-400 text-sm">Direct (Gaussian elimination) vs iterative (Gauss-Seidel, Jacobi) solvers</p>
       </div>
+
+      {compError && (
+        <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          {compError}
+        </div>
+      )}
 
       {/* System selector */}
       <div className="glass-card p-5 space-y-4">

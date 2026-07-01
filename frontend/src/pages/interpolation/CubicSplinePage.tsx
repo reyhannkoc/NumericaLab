@@ -17,6 +17,7 @@ export default function CubicSplinePage() {
   const [queryPoints, setQueryPoints] = useState('0.5,1.5,2.5,3.5,4.5')
   const [result,      setResult]      = useState<InterpolationResult | null>(null)
   const [isLoading,   setIsLoading]   = useState(false)
+  const [error,       setError]       = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     const xs = parseNumbers(xPoints)
@@ -25,6 +26,7 @@ export default function CubicSplinePage() {
     if (xs.length < 2 || xs.length !== ys.length || qs.length === 0) return
 
     setIsLoading(true)
+    setError(null)
     try {
       const res = await interpolationService.interpolate({
         x_points: xs,
@@ -34,13 +36,13 @@ export default function CubicSplinePage() {
       })
       setResult(res)
     } catch (err) {
-      console.error('[CubicSplinePage] compute error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [xPoints, yPoints, queryPoints])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   return (
     <LessonPage
@@ -65,6 +67,7 @@ export default function CubicSplinePage() {
           isLoading={isLoading}
           onCompute={handleCompute}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

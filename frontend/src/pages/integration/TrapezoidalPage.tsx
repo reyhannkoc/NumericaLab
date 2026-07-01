@@ -14,20 +14,22 @@ export default function TrapezoidalPage() {
   const [n,           setN]           = useState(10)
   const [result,      setResult]      = useState<IntegrationResult | null>(null)
   const [isLoading,   setIsLoading]   = useState(false)
+  const [error,       setError]       = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const res = await integrationService.integrate({ expression, a, b, n, method: 'trapezoidal' })
       setResult(res)
     } catch (err) {
-      console.error('[TrapezoidalPage] compute error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [expression, a, b, n])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   return (
     <LessonPage
@@ -51,6 +53,7 @@ export default function TrapezoidalPage() {
           isLoading={isLoading}
           onCompute={handleCompute}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

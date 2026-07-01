@@ -82,6 +82,7 @@ export default function NewtonDividedDiffPage() {
   const [result,      setResult]      = useState<InterpolationResult | null>(null)
   const [isLoading,   setIsLoading]   = useState(false)
   const [showTable,   setShowTable]   = useState(false)
+  const [error,       setError]       = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     const xs = parseNumbers(xPoints)
@@ -89,19 +90,20 @@ export default function NewtonDividedDiffPage() {
     const qs = parseNumbers(queryPts)
     if (xs.length < 2 || xs.length !== ys.length || qs.length === 0) return
     setIsLoading(true)
+    setError(null)
     try {
       const res = await interpolationService.interpolate({
         x_points: xs, y_points: ys, query_points: qs, method: 'newton_divided_diff',
       })
       setResult(res)
     } catch (err) {
-      console.error('[NewtonDividedDiffPage] error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [xPoints, yPoints, queryPts])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   const applyPreset = (p: PlaygroundPreset) => {
     const v = p.params as Record<string, string>
@@ -298,6 +300,7 @@ export default function NewtonDividedDiffPage() {
             onRun={handleCompute}
             onReset={handleReset}
             isLoading={isLoading}
+            error={error}
             description="Newton divided differences interpolation. Enter x and y data points, then query values to interpolate."
           />
           {showTable && coeffRows.length > 0 && (

@@ -15,9 +15,11 @@ export default function GoldenSectionPage() {
   const [alpha, setAlpha] = useState(0.3)
   const [result, setResult] = useState<OptimizationResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const res = await optimizationService.optimize({
         expression, method: 'golden_section', a, b,
@@ -25,13 +27,13 @@ export default function GoldenSectionPage() {
       })
       setResult(res)
     } catch (err) {
-      console.error('[GoldenSectionPage] error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [expression, a, b])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   return (
     <LessonPage
@@ -54,6 +56,7 @@ export default function GoldenSectionPage() {
           isLoading={isLoading}
           onCompute={handleCompute}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

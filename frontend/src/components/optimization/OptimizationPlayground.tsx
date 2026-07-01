@@ -51,8 +51,8 @@ type IterRow = Record<string, unknown> & { k: number; x: string; fx: string; ext
 export default function OptimizationPlayground({
   method, expression, a, b, x0, alpha,
   onExpressionChange, onAChange, onBChange, onX0Change, onAlphaChange,
-  result, isLoading, onCompute, onReset,
-}: OptimizationPlaygroundProps) {
+  result, isLoading, onCompute, onReset, error,
+}: OptimizationPlaygroundProps & { error?: string | null }) {
   const color = METHOD_COLOR[method]
   const label = METHOD_LABEL[method]
   const presets = method === 'golden_section' ? GS_PRESETS : GD_PRESETS
@@ -170,6 +170,7 @@ export default function OptimizationPlayground({
         onRun={onCompute}
         onReset={onReset}
         isLoading={isLoading}
+        error={error}
         description={method === 'golden_section'
           ? 'Minimize f(x) on [a, b] using golden section search. Requires a unimodal function.'
           : 'Minimize f(x) starting from x₀ using gradient descent. Choose α carefully.'}

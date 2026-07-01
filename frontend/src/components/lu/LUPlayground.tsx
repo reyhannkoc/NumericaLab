@@ -61,8 +61,8 @@ function MatrixGrid({ data, title, color }: { data: number[][]; title: string; c
 export default function LUPlayground({
   method, matrix, vectorB, size,
   onMatrixChange, onVectorChange, onSizeChange,
-  result, solution, isLoading, onCompute, onReset,
-}: LUPlaygroundProps) {
+  result, solution, isLoading, onCompute, onReset, error,
+}: LUPlaygroundProps & { error?: string | null }) {
   const color = METHOD_COLOR[method]
   const presets = method === 'lu' ? LU_PRESETS : CHOL_PRESETS
 
@@ -203,6 +203,7 @@ export default function LUPlayground({
       onRun={onCompute}
       onReset={onReset}
       isLoading={isLoading}
+      error={error}
       description={method === 'lu'
         ? 'Factor A = LU (with partial pivoting). Optionally provide b to also solve Ax = b.'
         : 'Factor A = LLᵀ (Cholesky). A must be symmetric positive-definite.'}

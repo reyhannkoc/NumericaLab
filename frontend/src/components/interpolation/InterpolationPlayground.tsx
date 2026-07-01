@@ -20,6 +20,7 @@ export interface InterpolationPlaygroundProps {
   isLoading: boolean
   onCompute: () => void
   onReset: () => void
+  error?: string | null
 }
 
 // ─── Presets ──────────────────────────────────────────────────────────────────
@@ -141,7 +142,7 @@ export default function InterpolationPlayground(props: InterpolationPlaygroundPr
   const {
     method, xPoints, yPoints, queryPoints,
     onXPointsChange, onYPointsChange, onQueryPointsChange,
-    result, isLoading, onCompute, onReset,
+    result, isLoading, onCompute, onReset, error,
   } = props
 
   const presets = method === 'lagrange' ? LAGRANGE_PRESETS : SPLINE_PRESETS
@@ -232,6 +233,7 @@ export default function InterpolationPlayground(props: InterpolationPlaygroundPr
         onRun={onCompute}
         onReset={onReset}
         isLoading={isLoading}
+        error={error}
       />
 
       {/* Lagrange: show query results table */}

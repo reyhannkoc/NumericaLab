@@ -65,8 +65,8 @@ export default function LinearSystemPlayground({
   method, matrixA, vectorB, size,
   onMatrixChange, onVectorChange, onSizeChange,
   solution, iterations, residual,
-  isLoading, onCompute, onReset,
-}: LinearSystemPlaygroundProps) {
+  isLoading, onCompute, onReset, error,
+}: LinearSystemPlaygroundProps & { error?: string | null }) {
   const color = METHOD_COLOR[method]
   const label = METHOD_LABEL[method]
   const [showIterTable, setShowIterTable] = useState(false)
@@ -231,6 +231,7 @@ export default function LinearSystemPlayground({
         onRun={onCompute}
         onReset={onReset}
         isLoading={isLoading}
+        error={error}
         description={`Solve Ax=b using ${label}. Enter matrix A and vector b, then click Solve.`}
       />
 

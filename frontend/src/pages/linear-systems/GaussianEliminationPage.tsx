@@ -13,9 +13,11 @@ export default function GaussianEliminationPage() {
   const [vectorB, setVectorB] = useState([3,2,3])
   const [result,  setResult]  = useState<LinearSystemResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error,   setError]   = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const res = await linearSystemsService.solve({
         matrix_a: matrixA,
@@ -24,13 +26,13 @@ export default function GaussianEliminationPage() {
       })
       setResult(res)
     } catch (err) {
-      console.error('[GaussianEliminationPage] error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [matrixA, vectorB])
 
-  const handleReset = useCallback(() => setResult(null), [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   return (
     <LessonPage
@@ -59,6 +61,7 @@ export default function GaussianEliminationPage() {
           isLoading={isLoading}
           onCompute={handleCompute}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

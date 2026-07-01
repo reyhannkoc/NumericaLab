@@ -42,11 +42,13 @@ export default function IntegrationComparisonPage() {
     simpsons_3_8: null, romberg: null,
   })
   const [loading, setLoading] = useState(false)
+  const [compError, setCompError] = useState<string | null>(null)
 
   const cs = CASE_STUDIES[caseIdx]
 
   const runComparison = useCallback(async () => {
     setLoading(true)
+    setCompError(null)
     try {
       const [trap, simp, gauss] = await Promise.all([
         integrationService.integrate({ expression: cs.expr, a: cs.a, b: cs.b, n: 10, method: 'trapezoidal' }),
@@ -55,7 +57,7 @@ export default function IntegrationComparisonPage() {
       ])
       setResults(prev => ({ ...prev, trapezoidal: trap, simpsons: simp, gaussian_quadrature: gauss }))
     } catch (err) {
-      console.error('[IntegrationComparison] error:', err)
+      setCompError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
@@ -122,6 +124,12 @@ export default function IntegrationComparisonPage() {
           Understand when each method shines and when it fails.
         </p>
       </div>
+
+      {compError && (
+        <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          {compError}
+        </div>
+      )}
 
       {/* Case study selector */}
       <div className="glass-card p-6">

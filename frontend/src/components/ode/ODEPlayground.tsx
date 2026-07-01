@@ -1,9 +1,22 @@
 import { useState } from 'react'
+import Plot from 'react-plotly.js'
+import type Plotly from 'plotly.js'
 import InteractivePlayground from '@components/lesson/sections/InteractivePlayground'
 import AlgorithmExecution from '@components/lesson/sections/AlgorithmExecution'
 import type { PlaygroundPreset } from '@/types/lesson.types'
 import type { ODEResult } from '@/types/api.types'
 import type { ODEMethodProp } from './ODEVisualization'
+
+const DARK_LAYOUT: Partial<Plotly.Layout> = {
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+  font: { color: '#94a3b8', size: 11 },
+  margin: { l: 55, r: 15, t: 20, b: 45 },
+  xaxis: { gridcolor: 'rgba(255,255,255,0.06)', zerolinecolor: 'rgba(255,255,255,0.2)', tickfont: { color: '#64748b' } },
+  yaxis: { gridcolor: 'rgba(255,255,255,0.06)', zerolinecolor: 'rgba(255,255,255,0.2)', tickfont: { color: '#64748b' } },
+  showlegend: true,
+  legend: { bgcolor: 'transparent', bordercolor: 'transparent', x: 0.01, y: 0.98 },
+}
+const PLOTLY_CFG = { displayModeBar: false, responsive: true }
 
 export interface ODEPlaygroundProps {
   method: ODEMethodProp
@@ -21,6 +34,7 @@ export interface ODEPlaygroundProps {
   isLoading: boolean
   onCompute: () => void
   onReset: () => void
+  error?: string | null
 }
 
 const METHOD_COLOR: Record<ODEMethodProp, string> = {
@@ -50,7 +64,7 @@ type IterRow = Record<string, unknown> & { k: number; x: string; y: string; err:
 export default function ODEPlayground({
   method, expression, x0, y0, xEnd, h,
   onExpressionChange, onX0Change, onY0Change, onXEndChange, onHChange,
-  result, isLoading, onCompute, onReset,
+  result, isLoading, onCompute, onReset, error,
 }: ODEPlaygroundProps) {
   const color = METHOD_COLOR[method]
   const label = METHOD_LABEL[method]
@@ -117,6 +131,24 @@ export default function ODEPlayground({
     ? Math.max(...result.global_error)
     : null
 
+  const solutionTraces: Plotly.Data[] = result ? [
+    {
+      x: result.x_values,
+      y: result.y_values,
+      type: 'scatter', mode: 'lines+markers',
+      name: result.method === 'euler' ? "Euler's Method" : 'RK4',
+      line: { color, width: 2.5 },
+      marker: { color, size: result.x_values.length > 30 ? 3 : 6 },
+    },
+    ...(result.exact_values && result.exact_values.length > 0 ? [{
+      x: result.x_values,
+      y: result.exact_values,
+      type: 'scatter' as const, mode: 'lines' as const,
+      name: 'Exact',
+      line: { color: '#94a3b8', width: 1.5, dash: 'dash' as const },
+    }] : []),
+  ] : []
+
   const resultsPanel = result ? (
     <div className="space-y-3">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -132,6 +164,25 @@ export default function ODEPlayground({
           </div>
         ))}
       </div>
+
+      {solutionTraces.length > 0 && (
+        <div className="glass-card overflow-hidden">
+          <div className="px-3 pt-2 pb-0 border-b border-surface-border">
+            <p className="text-xs text-slate-400 font-medium">Solution: y(x)</p>
+          </div>
+          <Plot
+            data={solutionTraces}
+            layout={{
+              ...DARK_LAYOUT,
+              xaxis: { ...DARK_LAYOUT.xaxis, title: { text: 'x', font: { color: '#94a3b8' } } },
+              yaxis: { ...DARK_LAYOUT.yaxis, title: { text: 'y(x)', font: { color: '#94a3b8' } } },
+            }}
+            config={PLOTLY_CFG}
+            style={{ width: '100%', height: '220px' }}
+          />
+        </div>
+      )}
+
       {result.x_values.length > 0 && (
         <button onClick={() => setShowTable(t => !t)} className="text-xs transition-colors" style={{ color }}>
           {showTable ? 'Hide' : 'Show'} step table ({Math.min(result.x_values.length, 50)} rows)
@@ -168,6 +219,7 @@ export default function ODEPlayground({
         onRun={onCompute}
         onReset={onReset}
         isLoading={isLoading}
+        error={error}
         description={`Solve the IVP dy/dx = f(x,y), y(x₀) = y₀ using ${label}. Adjust step size h to observe accuracy changes.`}
       />
       {showTable && iterRows.length > 0 && (

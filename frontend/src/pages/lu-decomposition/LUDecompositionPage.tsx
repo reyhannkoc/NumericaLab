@@ -7,6 +7,10 @@ import LUPlayground from '@components/lu/LUPlayground'
 import { luService } from '@/services/luService'
 import type { LUResult } from '@/types/api.types'
 
+function maxResidual(A: number[][], x: number[], b: number[]): number {
+  return Math.max(...b.map((bi, i) => Math.abs(A[i].reduce((s, aij, j) => s + aij * x[j], 0) - bi)))
+}
+
 export default function LUDecompositionPage() {
   const [size, setSize]       = useState<2|3|4>(3)
   const [matrix, setMatrix]   = useState([[2,1,1],[4,3,3],[8,7,9]])
@@ -14,9 +18,11 @@ export default function LUDecompositionPage() {
   const [result,  setResult]  = useState<LUResult | null>(null)
   const [solution, setSolution] = useState<number[] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error,   setError]   = useState<string | null>(null)
 
   const handleCompute = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const lu = await luService.decompose({ matrix, method: 'lu' })
       setResult(lu)
@@ -25,19 +31,19 @@ export default function LUDecompositionPage() {
         setSolution(solved.solution)
       }
     } catch (err) {
-      console.error('[LUDecompositionPage] error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [matrix, vectorB])
 
-  const handleReset = useCallback(() => { setResult(null); setSolution(null) }, [])
+  const handleReset = useCallback(() => { setResult(null); setSolution(null); setError(null) }, [])
 
   return (
     <LessonPage
       config={LU_DECOMPOSITION_CONFIG}
       primaryMethod="lu"
-      liveErrors={result ? { absoluteError: 0 } : undefined}
+      liveErrors={solution ? { absoluteError: maxResidual(matrix, solution, vectorB) } : undefined}
       renderVisualization={() => <LUVisualization method="lu" />}
       renderAnimation={() => <LUAnimation method="lu" />}
       renderPlayground={() => (
@@ -60,6 +66,7 @@ export default function LUDecompositionPage() {
           isLoading={isLoading}
           onCompute={handleCompute}
           onReset={handleReset}
+          error={error}
         />
       )}
     />

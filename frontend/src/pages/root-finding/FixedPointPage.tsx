@@ -70,9 +70,11 @@ export default function FixedPointPage() {
   const [result,    setResult]    = useState<RootFindingResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [showTable, setShowTable] = useState(false)
+  const [error,     setError]     = useState<string | null>(null)
 
   const handleSolve = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const res = await rootFindingService.solve({
         expression: gExpr,
@@ -83,13 +85,13 @@ export default function FixedPointPage() {
       })
       setResult(res)
     } catch (err) {
-      console.error('[FixedPointPage] error:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
   }, [gExpr, x0, tolerance, maxIter])
 
-  const handleReset = useCallback(() => { setResult(null) }, [])
+  const handleReset = useCallback(() => { setResult(null); setError(null) }, [])
 
   const applyPreset = (p: PlaygroundPreset) => {
     const v = p.params as Record<string, string | number>
@@ -254,6 +256,7 @@ export default function FixedPointPage() {
             onRun={handleSolve}
             onReset={handleReset}
             isLoading={isLoading}
+            error={error}
             description="Solve g(x) = x by iterating x_{n+1} = g(x_n). Convergence requires |g\'(x*)| < 1."
           />
           {showTable && iterRows.length > 0 && (
