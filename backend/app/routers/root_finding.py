@@ -47,7 +47,7 @@ def solve_root(req: RootFindingRequest):
             else:
                 raise HTTPException(422, f"Unknown method: {req.method}")
 
-        except ValueError as e:
+        except (ValueError, OverflowError) as e:
             raise HTTPException(400, str(e))
 
     return RootFindingResult(

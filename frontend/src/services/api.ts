@@ -17,10 +17,13 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.code === 'ECONNABORTED') {
-      return Promise.reject(new Error('Request timed out — the backend may be waking up (free tier). Please try again in a few seconds.'))
+      return Promise.reject(new Error('Request timed out — the backend may be waking up (free tier). Please wait 30 seconds and try again.'))
+    }
+    if (!err.response) {
+      return Promise.reject(new Error('Cannot reach the backend. The server may be starting up — please wait 30 seconds and try again.'))
     }
     const status = err.response?.status
-    if (status === 422 || status === 400) {
+    if (status === 422 || status === 400 || status === 500 || status === 501) {
       const detail = err.response.data?.detail
       const message = Array.isArray(detail)
         ? detail.map((d: { msg: string }) => d.msg).join(', ')

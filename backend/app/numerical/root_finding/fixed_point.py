@@ -14,8 +14,25 @@ def fixed_point(
     iterations: list[RootFindingIteration] = []
     converged = False
 
+    import math
+
     for n in range(1, max_iterations + 1):
-        x_new = g(x)
+        try:
+            x_new = g(x)
+        except (OverflowError, ZeroDivisionError, ValueError):
+            raise ValueError(
+                f"g(x) diverged or is undefined at iteration {n} (x={x:.6g}). "
+                "For fixed-point iteration, provide g(x) such that x = g(x) at the solution "
+                "(e.g. g(x) = (x+2)**(1/3) to find roots of x³-x-2=0)."
+            )
+
+        if not math.isfinite(x_new):
+            raise ValueError(
+                f"g(x) diverged to {x_new} at iteration {n}. "
+                "For fixed-point iteration, provide g(x) such that x = g(x) at the solution "
+                "(e.g. g(x) = (x+2)**(1/3) to find roots of x³-x-2=0)."
+            )
+
         error = abs(x_new - x)
 
         iterations.append(

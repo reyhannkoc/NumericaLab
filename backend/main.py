@@ -22,12 +22,13 @@ app = FastAPI(
 )
 
 # ── CORS ────────────────────────────────────────────────────────────────────
-# Origins are configured via the ALLOWED_ORIGINS env variable.
-# See backend/.env.example for details.
+# Public read-only computation API — allow all origins so the frontend works
+# regardless of which Render subdomain is assigned or any future domain changes.
+# allow_credentials must be False when allow_origins=["*"] (Starlette requirement).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.origins_list,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

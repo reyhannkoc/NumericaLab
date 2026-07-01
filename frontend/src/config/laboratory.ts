@@ -100,14 +100,6 @@ export const COMPARISON_METHODS: ComparisonMethodDef[] = [
     requiresInterval: false,
     apiMethod: 'secant',
   },
-  {
-    id: 'fixed_point',
-    name: 'Fixed Point',
-    category: 'root-finding',
-    requiresDerivative: false,
-    requiresInterval: false,
-    apiMethod: 'fixed_point',
-  },
 ]
 
 // ─── Float Precision Info ─────────────────────────────────────────────────────
@@ -201,7 +193,6 @@ export const BENCHMARK_ALGORITHMS: BenchmarkAlgorithmDef[] = [
   { id: 'bisection',      name: 'Bisection',      category: 'root-finding', apiMethod: 'bisection',      color: '#818cf8' },
   { id: 'newton_raphson', name: 'Newton-Raphson', category: 'root-finding', apiMethod: 'newton_raphson', color: '#34d399' },
   { id: 'secant',         name: 'Secant',         category: 'root-finding', apiMethod: 'secant',         color: '#fb923c' },
-  { id: 'fixed_point',    name: 'Fixed Point',    category: 'root-finding', apiMethod: 'fixed_point',    color: '#c084fc' },
 ]
 
 // ─── Engineering Disciplines ──────────────────────────────────────────────────

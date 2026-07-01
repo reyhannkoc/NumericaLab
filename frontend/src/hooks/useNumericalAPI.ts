@@ -35,7 +35,9 @@ export function useNumericalAPI<TRequest, TResult>(
       } catch (err: unknown) {
         const apiErr = err as { response?: { data?: APIError } }
         const message =
-          apiErr?.response?.data?.detail ?? 'An unexpected error occurred.'
+          apiErr?.response?.data?.detail
+          ?? (err instanceof Error ? err.message : null)
+          ?? 'An unexpected error occurred.'
         setState({ data: null, loading: false, error: message })
         return null
       }
