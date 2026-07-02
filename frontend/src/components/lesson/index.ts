@@ -15,7 +15,6 @@ export { default as TheorySection }           from './sections/TheorySection'
 export { default as MathFoundation }          from './sections/MathFoundation'
 export { default as InteractiveVisualization } from './sections/InteractiveVisualization'
 export { default as StepAnimation }           from './sections/StepAnimation'
-export { default as InteractivePlayground }   from './sections/InteractivePlayground'
 export { default as AlgorithmExecution }      from './sections/AlgorithmExecution'
 export { default as ErrorAnalysis }           from './sections/ErrorAnalysis'
 export { default as PerformanceAnalysis }     from './sections/PerformanceAnalysis'
@@ -50,7 +49,6 @@ export type {
   SummaryConfig,
   SummaryKeyPoint,
   SummaryNextStep,
-  PlaygroundPreset,
   LessonSectionId,
   DifficultyLevel,
   ProblemDifficulty,

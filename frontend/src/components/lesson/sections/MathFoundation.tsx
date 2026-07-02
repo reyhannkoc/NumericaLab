@@ -129,6 +129,7 @@ export default function MathFoundation({ config }: MathFoundationProps) {
         {config.derivationSteps && config.derivationSteps.length > 0 && (
           <div className="glass-card overflow-hidden">
             <button
+              type="button"
               onClick={() => setDerivationOpen((v) => !v)}
               className="w-full flex items-center justify-between px-5 py-4
                          text-sm font-medium text-slate-300 hover:text-white

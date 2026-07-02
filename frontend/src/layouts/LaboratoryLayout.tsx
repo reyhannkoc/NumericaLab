@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Navbar from '@components/navigation/Navbar'
 import LabNav from '@components/laboratory/LabNav'
+import ErrorBoundary from '@components/ErrorBoundary'
 
 export default function LaboratoryLayout() {
   const { pathname } = useLocation()
@@ -27,7 +28,9 @@ export default function LaboratoryLayout() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
             >
-              <Outlet />
+              <ErrorBoundary resetKey={pathname}>
+                <Outlet />
+              </ErrorBoundary>
             </motion.main>
           </AnimatePresence>
         </div>

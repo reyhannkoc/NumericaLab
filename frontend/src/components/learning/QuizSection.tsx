@@ -106,6 +106,7 @@ export default function QuizSection({ questions, lessonTitle, onComplete }: Quiz
 
                   return (
                     <button
+                      type="button"
                       key={oi}
                       disabled={submitted}
                       onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: oi }))}
@@ -156,6 +157,7 @@ export default function QuizSection({ questions, lessonTitle, onComplete }: Quiz
       <div className="mt-6 flex items-center gap-3">
         {!submitted ? (
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={!allAnswered}
             className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
@@ -164,6 +166,7 @@ export default function QuizSection({ questions, lessonTitle, onComplete }: Quiz
           </button>
         ) : (
           <button
+            type="button"
             onClick={handleRetry}
             className="px-5 py-2 rounded-lg text-sm font-medium bg-surface-card border border-surface-border text-slate-300 hover:text-white transition-colors"
           >

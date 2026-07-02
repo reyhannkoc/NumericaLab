@@ -99,7 +99,7 @@ export default function OptimizationComparisonPage() {
         <h2 className="text-lg font-semibold text-white">Select Test Function</h2>
         <div className="flex flex-wrap gap-3">
           {CASE_STUDIES.map((cs, i) => (
-            <button key={i}
+            <button type="button" key={i}
               onClick={() => { setCaseIdx(i); setResults({ golden_section: null, gradient_descent: null }) }}
               className={i === caseIdx
                 ? 'px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white border border-cyan-400'
@@ -107,7 +107,7 @@ export default function OptimizationComparisonPage() {
             >{cs.label} — {cs.description}</button>
           ))}
         </div>
-        <button onClick={runComparison} disabled={loading}
+        <button type="button" onClick={runComparison} disabled={loading}
           className="btn-primary px-6 bg-cyan-600 hover:bg-cyan-500 border-cyan-500">
           {loading ? 'Running...' : 'Run Comparison'}
         </button>

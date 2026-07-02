@@ -132,6 +132,7 @@ export default function LinearComparisonPage() {
         <div className="flex flex-wrap gap-3">
           {SYSTEMS.map((s, i) => (
             <button
+              type="button"
               key={i}
               onClick={() => { setSysIdx(i); setResults({ gaussian_elimination: null, gauss_seidel: null, jacobi: null }) }}
               className={i === sysIdx
@@ -143,6 +144,7 @@ export default function LinearComparisonPage() {
           ))}
         </div>
         <button
+          type="button"
           onClick={runComparison}
           disabled={loading}
           className="btn-primary px-6 bg-teal-600 hover:bg-teal-500 border-teal-500"

@@ -6,36 +6,9 @@ import { MathJax } from 'better-react-mathjax'
 
 interface PerformanceAnalysisProps {
   config: PerformanceConfig
-  /** Measured execution time in milliseconds from last run */
-  measuredMs?: number
-  /** Actual iteration count from last run */
-  actualIterations?: number
 }
 
-interface MetricTileProps {
-  label: string
-  value: string
-  sub?: string
-  accent?: boolean
-}
-
-function MetricTile({ label, value, sub, accent }: MetricTileProps) {
-  return (
-    <div className={`glass-card p-4 ${accent ? 'border-brand-500/30' : ''}`}>
-      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">{label}</p>
-      <p className={`text-lg font-bold font-mono ${accent ? 'text-brand-300' : 'text-white'}`}>
-        {value}
-      </p>
-      {sub && <p className="text-xs text-slate-500 mt-1">{sub}</p>}
-    </div>
-  )
-}
-
-export default function PerformanceAnalysis({
-  config,
-  measuredMs,
-  actualIterations,
-}: PerformanceAnalysisProps) {
+export default function PerformanceAnalysis({ config }: PerformanceAnalysisProps) {
   const meta = SECTION_MAP['performance']
 
   return (
@@ -47,26 +20,6 @@ export default function PerformanceAnalysis({
       />
 
       <div className="space-y-5">
-        {/* Live metrics (if a computation ran) */}
-        {(measuredMs !== undefined || actualIterations !== undefined) && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {measuredMs !== undefined && (
-              <MetricTile
-                label="Execution Time"
-                value={`${measuredMs.toFixed(2)} ms`}
-                accent
-              />
-            )}
-            {actualIterations !== undefined && (
-              <MetricTile
-                label="Iterations Used"
-                value={String(actualIterations)}
-                accent
-              />
-            )}
-          </div>
-        )}
-
         {/* Complexity grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="glass-card p-4">

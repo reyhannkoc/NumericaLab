@@ -221,6 +221,7 @@ export default function InterpolationVisualization({ method }: Props) {
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((p, i) => (
             <button
+              type="button"
               key={p.label}
               onClick={() => setPresetIdx(i)}
               className={clsx(
@@ -243,6 +244,7 @@ export default function InterpolationVisualization({ method }: Props) {
         </p>
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => setNumPoints((v) => Math.max(2, v - 1))}
             disabled={activePts <= 2}
             className="icon-btn disabled:opacity-30"
@@ -254,6 +256,7 @@ export default function InterpolationVisualization({ method }: Props) {
             />
           </div>
           <button
+            type="button"
             onClick={() => setNumPoints((v) => Math.min(maxPts, v + 1))}
             disabled={activePts >= maxPts}
             className="icon-btn disabled:opacity-30"

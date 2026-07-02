@@ -6,50 +6,9 @@ import { SECTION_MAP } from '@/config/lessonSections'
 
 interface ErrorAnalysisProps {
   config: ErrorAnalysisConfig
-  /** Optional live absolute error from the last computation */
-  absoluteError?: number
-  /** Optional live relative error */
-  relativeError?: number
-  /** Optional live iteration count */
-  iterations?: number
 }
 
-function ErrorBar({
-  label,
-  value,
-  unit = '',
-}: {
-  label: string
-  value: number
-  unit?: string
-}) {
-  const exponent = value > 0 ? Math.floor(Math.log10(value)) : 0
-  const level = Math.max(0, Math.min(100, ((exponent + 16) / 16) * 100))
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-slate-400">{label}</span>
-        <span className="text-xs text-brand-300 font-mono tabular-nums">
-          {value.toExponential(4)}{unit}
-        </span>
-      </div>
-      <div className="h-1.5 bg-surface-border rounded-full overflow-hidden">
-        <div
-          className="h-full bg-brand-500 rounded-full transition-all duration-500"
-          style={{ width: `${level}%` }}
-        />
-      </div>
-    </div>
-  )
-}
-
-export default function ErrorAnalysis({
-  config,
-  absoluteError,
-  relativeError,
-  iterations,
-}: ErrorAnalysisProps) {
+export default function ErrorAnalysis({ config }: ErrorAnalysisProps) {
   const meta = SECTION_MAP['error-analysis']
 
   return (
@@ -61,30 +20,6 @@ export default function ErrorAnalysis({
       />
 
       <div className="space-y-5">
-        {/* Live error display (if computation ran) */}
-        {(absoluteError !== undefined || relativeError !== undefined) && (
-          <div className="glass-card p-5">
-            <h3 className="section-label mb-4">Current Computation Errors</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {absoluteError !== undefined && (
-                <ErrorBar label="Absolute Error" value={absoluteError} />
-              )}
-              {relativeError !== undefined && (
-                <ErrorBar label="Relative Error" value={relativeError} unit="%" />
-              )}
-              {iterations !== undefined && (
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-slate-400">Iterations Used</span>
-                    <span className="text-xs text-brand-300 font-mono">{iterations}</span>
-                  </div>
-                  <div className="h-1.5 bg-surface-border rounded-full" />
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Error metric cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {config.metrics.map((metric, i) => (

@@ -35,6 +35,7 @@ export default function ErrorAnalysisLab() {
       <div className="flex flex-wrap gap-2 mb-6">
         {FLOAT_PHENOMENA.map((p) => (
           <button
+            type="button"
             key={p.id}
             onClick={() => handlePhenomenonSelect(p)}
             className={clsx(

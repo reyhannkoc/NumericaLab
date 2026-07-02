@@ -4,11 +4,7 @@ import type Plotly from 'plotly.js'
 import StepAnimation from '@components/lesson/sections/StepAnimation'
 import { useAnimation } from '@/hooks/useAnimation'
 import type { LinearSolverProp } from './LinearSystemVisualization'
-
-// Demo system: [5,-1;-1,5]x=[4,4] — solution x=[1,1]
-const A = [[5, -1], [-1, 5]]
-const B = [4, 4]
-const EXACT = [1, 1]
+import { A, B, buildIterFrames } from './linearSystemDemoData'
 
 // ─── Gaussian Elimination frames ─────────────────────────────────────────────
 
@@ -67,38 +63,6 @@ function buildGEFrames(): GEFrame[] {
     highlight: [0, 1],
   })
 
-  return frames
-}
-
-// ─── Iterative frames ─────────────────────────────────────────────────────────
-
-interface IterFrame {
-  x: number[]
-  error: number
-  iteration: number
-}
-
-function buildIterFrames(method: 'gauss_seidel' | 'jacobi'): IterFrame[] {
-  const frames: IterFrame[] = [{ x: [0, 0], error: Math.hypot(...EXACT), iteration: 0 }]
-  let x = [0, 0]
-  for (let k = 0; k < 20; k++) {
-    let xNew: number[]
-    if (method === 'jacobi') {
-      xNew = [
-        (B[0] - A[0][1] * x[1]) / A[0][0],
-        (B[1] - A[1][0] * x[0]) / A[1][1],
-      ]
-    } else {
-      const xgs = [...x]
-      xgs[0] = (B[0] - A[0][1] * xgs[1]) / A[0][0]
-      xgs[1] = (B[1] - A[1][0] * xgs[0]) / A[1][1]
-      xNew = xgs
-    }
-    const err = Math.hypot(xNew[0] - EXACT[0], xNew[1] - EXACT[1])
-    frames.push({ x: xNew, error: err, iteration: k + 1 })
-    if (err < 1e-10) break
-    x = xNew
-  }
   return frames
 }
 

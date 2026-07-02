@@ -141,6 +141,7 @@ export default function IntegrationVisualization({ method }: Props) {
         <div className="flex gap-1">
           {FUNCTIONS.map((f, i) => (
             <button
+              type="button"
               key={f.label}
               onClick={() => setFuncIdx(i)}
               className={clsx(
@@ -227,6 +228,7 @@ export default function IntegrationVisualization({ method }: Props) {
           <span className="text-xs text-slate-400">Quick n:</span>
           {N_OPTIONS.map(opt => (
             <button
+              type="button"
               key={opt}
               onClick={() => setN(method === 'simpsons' && opt % 2 !== 0 ? opt + 1 : opt)}
               className={clsx(

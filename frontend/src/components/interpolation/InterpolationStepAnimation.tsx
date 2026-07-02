@@ -2,13 +2,10 @@ import { useMemo, useState } from 'react'
 import Plot from 'react-plotly.js'
 import StepAnimation from '@components/lesson/sections/StepAnimation'
 import { useAnimation } from '@/hooks/useAnimation'
-import type { InterpolationMethod, InterpolationResult } from '@/types/api.types'
-
-type InterpMethod = Extract<InterpolationMethod, 'lagrange' | 'cubic_spline'>
+import { buildDemoCurve, type InterpMethod } from './interpolationDemoData'
 
 interface Props {
   method: InterpMethod
-  result: InterpolationResult | null
 }
 
 // ─── Plotly config ────────────────────────────────────────────────────────────
@@ -27,11 +24,13 @@ const PLOTLY_CONFIG = { displayModeBar: false, responsive: true }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function InterpolationStepAnimation({ method, result }: Props) {
+export default function InterpolationStepAnimation({ method }: Props) {
   const [speed, setSpeed] = useState(1)
 
-  const curveX = result?.curve_x ?? []
-  const curveY = result?.curve_y ?? []
+  const { curveX, curveY, queryPoints, interpolatedValues } = useMemo(
+    () => buildDemoCurve(method),
+    [method],
+  )
 
   const totalFrames = Math.max(1, curveX.length)
 
@@ -42,10 +41,10 @@ export default function InterpolationStepAnimation({ method, result }: Props) {
   })
 
   // Reveal portion of curve up to current frame
-  const visibleX = useMemo(() => curveX.slice(0, frame + 1), [frame, curveX.length]) // eslint-disable-line react-hooks/exhaustive-deps
-  const visibleY = useMemo(() => curveY.slice(0, frame + 1), [frame, curveY.length]) // eslint-disable-line react-hooks/exhaustive-deps
+  const visibleX = useMemo(() => curveX.slice(0, frame + 1), [frame, curveX])
+  const visibleY = useMemo(() => curveY.slice(0, frame + 1), [frame, curveY])
 
-  const traces: Plotly.Data[] = result ? [
+  const traces: Plotly.Data[] = [
     {
       x: visibleX, y: visibleY,
       type: 'scatter', mode: 'lines',
@@ -53,22 +52,18 @@ export default function InterpolationStepAnimation({ method, result }: Props) {
       name: method === 'lagrange' ? 'Lagrange curve' : 'Cubic spline',
     },
     {
-      x: result.query_points, y: result.interpolated_values,
+      x: queryPoints, y: interpolatedValues,
       type: 'scatter', mode: 'markers',
       marker: { color: '#f59e0b', size: 9, symbol: 'circle', line: { color: '#fff', width: 1 } },
       name: 'Query points',
     },
-  ] : []
+  ]
 
-  const xRange = curveX.length > 0
-    ? [curveX[0] - 0.1, curveX[curveX.length - 1] + 0.1] as [number, number]
-    : undefined
+  const xRange = [curveX[0] - 0.1, curveX[curveX.length - 1] + 0.1] as [number, number]
 
   const pct = totalFrames > 1 ? Math.round((frame / (totalFrames - 1)) * 100) : 100
 
-  const stepDesc = result
-    ? `Drawing interpolated curve: ${pct}% complete`
-    : 'Run the playground below to load interpolation data into this animation.'
+  const stepDesc = `Drawing interpolated curve: ${pct}% complete`
 
   return (
     <StepAnimation
@@ -87,34 +82,28 @@ export default function InterpolationStepAnimation({ method, result }: Props) {
       }}
       stepDescription={stepDesc}
     >
-      {!result ? (
-        <div className="flex items-center justify-center h-[280px] text-slate-500 text-sm">
-          Run the Interactive Playground below — the interpolated curve will animate here.
-        </div>
-      ) : (
-        <Plot
-          data={traces}
-          layout={{
-            ...DARK_LAYOUT,
-            xaxis: {
-              ...DARK_LAYOUT.xaxis,
-              range: xRange,
-              title: { text: 'x', font: { color: '#94a3b8' } },
-            },
-            yaxis: {
-              ...DARK_LAYOUT.yaxis,
-              title: { text: 'y', font: { color: '#94a3b8' } },
-            },
-            title: {
-              text: `${method === 'lagrange' ? 'Lagrange Polynomial' : 'Cubic Spline'} — curve reveal`,
-              font: { color: '#64748b', size: 12 },
-              x: 0.01,
-            },
-          } as Partial<Plotly.Layout>}
-          config={PLOTLY_CONFIG}
-          style={{ width: '100%', height: '280px' }}
-        />
-      )}
+      <Plot
+        data={traces}
+        layout={{
+          ...DARK_LAYOUT,
+          xaxis: {
+            ...DARK_LAYOUT.xaxis,
+            range: xRange,
+            title: { text: 'x', font: { color: '#94a3b8' } },
+          },
+          yaxis: {
+            ...DARK_LAYOUT.yaxis,
+            title: { text: 'y', font: { color: '#94a3b8' } },
+          },
+          title: {
+            text: `${method === 'lagrange' ? 'Lagrange Polynomial' : 'Cubic Spline'} — curve reveal`,
+            font: { color: '#64748b', size: 12 },
+            x: 0.01,
+          },
+        } as Partial<Plotly.Layout>}
+        config={PLOTLY_CONFIG}
+        style={{ width: '100%', height: '280px' }}
+      />
     </StepAnimation>
   )
 }

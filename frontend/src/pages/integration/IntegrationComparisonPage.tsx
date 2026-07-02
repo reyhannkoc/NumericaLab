@@ -137,6 +137,7 @@ export default function IntegrationComparisonPage() {
         <div className="flex flex-wrap gap-2 mb-4">
           {CASE_STUDIES.map((cs, i) => (
             <button
+              type="button"
               key={cs.label}
               onClick={() => { setCaseIdx(i); setResults(prev => ({ ...prev, trapezoidal: null, simpsons: null, gaussian_quadrature: null })) }}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
@@ -154,6 +155,7 @@ export default function IntegrationComparisonPage() {
             <span className="ml-2 text-pink-400">Exact = {cs.exact.toFixed(8)}</span>
           </div>
           <button
+            type="button"
             onClick={runComparison}
             disabled={loading}
             className="btn-primary px-4"

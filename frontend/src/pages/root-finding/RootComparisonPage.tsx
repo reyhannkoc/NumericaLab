@@ -305,6 +305,7 @@ function ChallengeCard({ ch }: { ch: typeof CHALLENGES[0] }) {
   return (
     <div className="glass-card overflow-hidden">
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between p-4 hover:bg-surface-hover/30 transition-colors text-left"
       >
@@ -468,6 +469,7 @@ export default function RootComparisonPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {CASE_STUDIES.map((cs) => (
               <button
+                type="button"
                 key={cs.id}
                 onClick={() => loadPreset(cs)}
                 className={clsx(
@@ -553,6 +555,7 @@ export default function RootComparisonPage() {
               <div className="flex flex-wrap gap-1.5">
                 {TOL_OPTIONS.map(({ label, value }) => (
                   <button
+                    type="button"
                     key={label}
                     onClick={() => setTolerance(value)}
                     className={clsx(
@@ -572,6 +575,7 @@ export default function RootComparisonPage() {
           </div>
 
           <button
+            type="button"
             onClick={handleCompare}
             disabled={isLoading}
             className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed text-base py-3"

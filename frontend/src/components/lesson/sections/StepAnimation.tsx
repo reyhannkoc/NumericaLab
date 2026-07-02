@@ -78,6 +78,7 @@ export default function StepAnimation({
           <div className="flex items-center gap-2">
             {/* Rewind */}
             <button
+              type="button"
               onClick={onReset}
               className="icon-btn"
               title="Reset"
@@ -87,6 +88,7 @@ export default function StepAnimation({
 
             {/* Step back */}
             <button
+              type="button"
               onClick={onStepBack}
               disabled={frame === 0}
               className="icon-btn disabled:opacity-30"
@@ -97,6 +99,7 @@ export default function StepAnimation({
 
             {/* Play / Pause */}
             <button
+              type="button"
               onClick={status === 'playing' ? onPause : onPlay}
               className={clsx(
                 'flex items-center justify-center w-9 h-9 rounded-full font-medium text-sm',
@@ -109,6 +112,7 @@ export default function StepAnimation({
 
             {/* Step forward */}
             <button
+              type="button"
               onClick={onStepForward}
               disabled={frame >= totalFrames - 1}
               className="icon-btn disabled:opacity-30"
@@ -130,6 +134,7 @@ export default function StepAnimation({
               <div className="flex gap-1">
                 {SPEEDS.map((s) => (
                   <button
+                    type="button"
                     key={s}
                     onClick={() => onSpeedChange(s)}
                     className={clsx(

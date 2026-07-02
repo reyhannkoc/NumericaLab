@@ -31,6 +31,11 @@ export function useLabComparison() {
     setErrorMessage(null)
     try {
       const data = await runComparison(params)
+      if (data.length === 0) {
+        setErrorMessage('All selected methods failed to run. Check the expression and try again.')
+        setStatus('error')
+        return
+      }
       setResults(data)
       setStatus('complete')
     } catch (err) {

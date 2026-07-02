@@ -29,35 +29,24 @@ interface LessonPageProps {
   config: LessonConfig
   renderVisualization?: () => ReactNode
   renderAnimation?: () => ReactNode
-  renderPlayground?: () => ReactNode
+  renderAlgorithm?: () => ReactNode
   primaryMethod?: string
-  liveErrors?: {
-    absoluteError?: number
-    relativeError?: number
-    iterations?: number
-  }
-  livePerformance?: {
-    measuredMs?: number
-    actualIterations?: number
-  }
 }
 
 export default function LessonPage({
   config,
   renderVisualization,
   renderAnimation,
-  renderPlayground,
+  renderAlgorithm,
   primaryMethod,
-  liveErrors,
-  livePerformance,
 }: LessonPageProps) {
   const [currentSection, setCurrentSection] = useState<LessonSectionId | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
 
   const { pathname } = useLocation()
-  const { visitLesson, markPlaygroundUsed, submitQuiz } = useProgress()
+  const { visitLesson, submitQuiz } = useProgress()
 
-  // Track visits and playground exposure
+  // Track visits
   useEffect(() => {
     visitLesson(pathname)
   }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -67,8 +56,7 @@ export default function LessonPage({
     'motivation', 'theory', 'math-foundation',
     ...(renderVisualization ? ['visualization' as const] : []),
     ...(renderAnimation     ? ['animation'     as const] : []),
-    ...(renderPlayground    ? ['playground'    as const] : []),
-    'algorithm',
+    ...(renderAlgorithm     ? ['algorithm'     as const] : []),
     'error-analysis', 'performance',
     ...(config.comparison ? ['comparison' as const] : []),
     'applications', 'mistakes', 'practice', 'challenges', 'summary',
@@ -81,10 +69,7 @@ export default function LessonPage({
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            const id = entry.target.id as LessonSectionId
-            setCurrentSection(id)
-            // Mark playground used when user scrolls into the playground section
-            if (id === 'playground') markPlaygroundUsed()
+            setCurrentSection(entry.target.id as LessonSectionId)
           }
         }
       },
@@ -125,19 +110,10 @@ export default function LessonPage({
 
             {renderVisualization?.()}
             {renderAnimation?.()}
-            {renderPlayground?.()}
+            {renderAlgorithm?.()}
 
-            <ErrorAnalysis
-              config={config.errorAnalysis}
-              absoluteError={liveErrors?.absoluteError}
-              relativeError={liveErrors?.relativeError}
-              iterations={liveErrors?.iterations}
-            />
-            <PerformanceAnalysis
-              config={config.performance}
-              measuredMs={livePerformance?.measuredMs}
-              actualIterations={livePerformance?.actualIterations}
-            />
+            <ErrorAnalysis config={config.errorAnalysis} />
+            <PerformanceAnalysis config={config.performance} />
 
             {config.comparison && (
               <ComparisonCenter config={config.comparison} primaryMethod={primaryMethod} />

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Navbar from '@components/navigation/Navbar'
 import Sidebar from '@components/navigation/Sidebar'
 import Breadcrumb from '@components/navigation/Breadcrumb'
+import ErrorBoundary from '@components/ErrorBoundary'
 import { useBreadcrumbs } from '@hooks/useBreadcrumbs'
 
 export default function ModuleLayout() {
@@ -32,7 +33,9 @@ export default function ModuleLayout() {
               exit={{ opacity: 0, x: -8 }}
               transition={{ duration: 0.22, ease: 'easeOut' }}
             >
-              <Outlet />
+              <ErrorBoundary resetKey={pathname}>
+                <Outlet />
+              </ErrorBoundary>
             </motion.main>
           </AnimatePresence>
         </div>

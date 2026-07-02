@@ -146,6 +146,7 @@ export default function LinearSystemVisualization({ method }: Props) {
       <div className="space-y-2">
         {DEMO_SYSTEMS.map((s, i) => (
           <button
+            type="button"
             key={i}
             onClick={() => setSysIdx(i)}
             className={clsx(

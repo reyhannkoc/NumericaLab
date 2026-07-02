@@ -127,7 +127,7 @@ export default function ODEComparisonPage() {
         <h2 className="text-lg font-semibold text-white">Test Function &amp; Parameters</h2>
         <div className="flex flex-wrap gap-3">
           {CASE_STUDIES.map((cs, i) => (
-            <button key={i}
+            <button type="button" key={i}
               onClick={() => { setCaseIdx(i); setResults({ euler: null, runge_kutta_4: null }) }}
               className={i === caseIdx
                 ? 'px-4 py-2 rounded-lg text-sm font-medium bg-lime-700 text-white border border-lime-400'
@@ -139,7 +139,7 @@ export default function ODEComparisonPage() {
         <div className="flex items-center gap-4 flex-wrap">
           <span className="text-sm text-slate-400">Step size h:</span>
           {H_VALUES.map((hv, i) => (
-            <button key={i}
+            <button type="button" key={i}
               onClick={() => { setHIdx(i); setResults({ euler: null, runge_kutta_4: null }) }}
               className={i === hIdx
                 ? 'px-3 py-1 rounded-lg text-sm font-mono font-bold bg-lime-700 text-white border border-lime-400'
@@ -148,7 +148,7 @@ export default function ODEComparisonPage() {
             </button>
           ))}
         </div>
-        <button onClick={runComparison} disabled={loading}
+        <button type="button" onClick={runComparison} disabled={loading}
           className="btn-primary px-6 bg-lime-700 hover:bg-lime-600 border-lime-500">
           {loading ? 'Running...' : 'Run Comparison'}
         </button>

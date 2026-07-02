@@ -31,6 +31,7 @@ export default function LessonProgress({
       {sections.map((section) => (
         <button
           key={section.id}
+          type="button"
           onClick={() => {
             onSectionChange(section.id)
             document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' })

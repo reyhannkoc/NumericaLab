@@ -14,7 +14,6 @@ export type LessonSectionId =
   | 'math-foundation'
   | 'visualization'
   | 'animation'
-  | 'playground'
   | 'algorithm'
   | 'error-analysis'
   | 'performance'
@@ -247,14 +246,4 @@ export interface LessonConfig {
   practiceProblems: PracticeProblemItem[]
   interactiveChallenges: ChallengeItem[]
   summary: SummaryConfig
-}
-
-// ─── Playground Preset ───────────────────────────────────────────────────────
-// Predefined example inputs shown in the playground section.
-
-export interface PlaygroundPreset {
-  id: string
-  label: string
-  description: string
-  params: Record<string, unknown>
 }

@@ -148,6 +148,7 @@ export default function LUVisualization({ method }: Props) {
           const realIdx = DEMO_MATRICES.indexOf(dm)
           return (
             <button
+              type="button"
               key={i}
               onClick={() => setMatIdx(realIdx)}
               className={clsx(

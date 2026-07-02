@@ -145,6 +145,7 @@ export default function AlgorithmExecution<T extends Record<string, unknown>>({
       {executionLog && executionLog.length > 0 && (
         <div className="glass-card overflow-hidden">
           <button
+            type="button"
             onClick={() => setShowLog((v) => !v)}
             className="w-full flex items-center justify-between px-4 py-3 text-xs
                        text-slate-400 hover:text-white hover:bg-surface-hover/30 transition-colors"

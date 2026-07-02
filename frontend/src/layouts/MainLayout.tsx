@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Navbar from '@components/navigation/Navbar'
+import ErrorBoundary from '@components/ErrorBoundary'
 
 export default function MainLayout() {
   const { pathname } = useLocation()
@@ -17,7 +18,9 @@ export default function MainLayout() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
         >
-          <Outlet />
+          <ErrorBoundary resetKey={pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </motion.main>
       </AnimatePresence>
     </div>

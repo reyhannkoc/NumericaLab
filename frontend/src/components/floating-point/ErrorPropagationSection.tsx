@@ -150,6 +150,7 @@ export default function ErrorPropagationSection() {
           <div className="flex gap-1">
             {STEP_OPTIONS.map((s) => (
               <button
+                type="button"
                 key={s}
                 onClick={() => handleStepChange(s)}
                 className={`px-2 py-0.5 rounded text-xs transition-colors ${

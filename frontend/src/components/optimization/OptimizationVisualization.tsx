@@ -145,7 +145,7 @@ export default function OptimizationVisualization({ method }: Props) {
         <p className="section-label mb-2">Function</p>
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((p, i) => (
-            <button key={i} onClick={() => setFnIdx(i)}
+            <button type="button" key={i} onClick={() => setFnIdx(i)}
               className={clsx('px-3 py-1.5 rounded-lg text-xs font-mono transition-colors',
                 i === fnIdx ? 'border text-white' : 'bg-surface-card border border-surface-border text-slate-400 hover:text-white'
               )}

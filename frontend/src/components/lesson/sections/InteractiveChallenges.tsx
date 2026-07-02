@@ -40,6 +40,7 @@ export default function InteractiveChallenges({ challenges }: InteractiveChallen
         <div className="space-y-2">
           {challenges.map((c, i) => (
             <button
+              type="button"
               key={c.id}
               onClick={() => handleSelectChallenge(i)}
               className={clsx(
@@ -116,6 +117,7 @@ export default function InteractiveChallenges({ challenges }: InteractiveChallen
           {/* Navigation */}
           <div className="flex items-center justify-between">
             <button
+              type="button"
               onClick={() => setCurrentStep((s) => Math.max(0, s - 1))}
               disabled={currentStep === 0}
               className="px-3 py-1.5 rounded-lg text-xs font-medium
@@ -128,6 +130,7 @@ export default function InteractiveChallenges({ challenges }: InteractiveChallen
 
             {currentStep < challenge.steps.length - 1 ? (
               <button
+                type="button"
                 onClick={() => setCurrentStep((s) => s + 1)}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium
                            bg-brand-600 hover:bg-brand-500 text-white transition-colors"

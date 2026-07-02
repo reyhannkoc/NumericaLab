@@ -152,6 +152,7 @@ export default function DifferentiationVisualization({ method }: Props) {
         <div className="flex flex-wrap gap-2">
           {FN_PRESETS.map((p, i) => (
             <button
+              type="button"
               key={p.label}
               onClick={() => { setFnIdx(i); setXPct(50) }}
               className={clsx(
@@ -189,6 +190,7 @@ export default function DifferentiationVisualization({ method }: Props) {
         <div className="flex flex-wrap gap-1.5">
           {H_OPTIONS.map((hv, i) => (
             <button
+              type="button"
               key={hv}
               onClick={() => setHIdx(i)}
               className={clsx(

@@ -44,6 +44,7 @@ export default function ComparisonCenter({
       <div className="flex gap-2 mb-5">
         {(['table', 'summary'] as const).map((v) => (
           <button
+            type="button"
             key={v}
             onClick={() => setView(v)}
             className={clsx(

@@ -2,24 +2,11 @@ import { useState } from 'react'
 import Plot from 'react-plotly.js'
 import StepAnimation from '@components/lesson/sections/StepAnimation'
 import { useAnimation } from '@/hooks/useAnimation'
-import type { DifferentiationMethod } from '@/types/api.types'
-
-type DiffMethod = Extract<DifferentiationMethod, 'forward' | 'backward' | 'central'>
+import { type DiffMethod, DEMO_FN, DEMO_DFN, DEMO_X, DEMO_LABEL, METHOD_COLOR } from './differentiationDemoData'
 
 // ─── Animation config ─────────────────────────────────────────────────────────
 
 const H_FRAMES = [1.0, 0.75, 0.5, 0.35, 0.25, 0.18, 0.12, 0.08, 0.05, 0.03, 0.02, 0.01]
-
-const METHOD_COLOR: Record<DiffMethod, string> = {
-  forward:  '#60a5fa',
-  backward: '#f87171',
-  central:  '#34d399',
-}
-
-const DEMO_FN  = Math.sin
-const DEMO_DFN = Math.cos
-const DEMO_X   = 1.0
-const DEMO_LABEL = 'sin(x), x = 1'
 
 // ─── Plotly config ────────────────────────────────────────────────────────────
 

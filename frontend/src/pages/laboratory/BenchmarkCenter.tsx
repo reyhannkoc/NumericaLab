@@ -64,6 +64,11 @@ export default function BenchmarkCenter() {
             color:         algo?.color ?? '#818cf8',
           }
         })
+      if (runs.length === 0) {
+        setError('All selected methods failed to run. Check the expression and try again.')
+        setStatus('error')
+        return
+      }
       setSuite(runs)
       setStatus('complete')
     } catch (err) {
@@ -121,6 +126,7 @@ export default function BenchmarkCenter() {
           </div>
 
           <button
+            type="button"
             onClick={runBenchmark}
             disabled={status === 'running' || selectedIds.length === 0}
             className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"

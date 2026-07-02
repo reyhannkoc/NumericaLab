@@ -44,6 +44,7 @@ export default function PracticeProblems({ problems }: PracticeProblemsProps) {
       <div className="flex gap-2 mb-5">
         {FILTERS.map((f) => (
           <button
+            type="button"
             key={f}
             onClick={() => setFilter(f)}
             className={clsx(
@@ -95,6 +96,7 @@ export default function PracticeProblems({ problems }: PracticeProblemsProps) {
               <div className="flex items-center gap-3">
                 {problem.hint && (
                   <button
+                    type="button"
                     onClick={() => toggleHint(problem.id)}
                     className="text-xs text-slate-500 hover:text-slate-300 transition-colors underline-offset-2 underline"
                   >

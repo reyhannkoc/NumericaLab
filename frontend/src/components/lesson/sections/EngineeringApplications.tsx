@@ -35,6 +35,7 @@ export default function EngineeringApplications({
       <div className="flex flex-wrap gap-2 mb-5">
         {applications.map((a, i) => (
           <button
+            type="button"
             key={i}
             onClick={() => setSelected(i)}
             className={clsx(

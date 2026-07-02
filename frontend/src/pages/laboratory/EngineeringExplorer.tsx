@@ -27,6 +27,7 @@ export default function EngineeringExplorer() {
           <p className="section-label px-1 mb-3">Disciplines</p>
           {ENGINEERING_DISCIPLINES.map((d) => (
             <button
+              type="button"
               key={d.id}
               onClick={() => setSelected(d)}
               className={clsx(
@@ -131,6 +132,7 @@ export default function EngineeringExplorer() {
                       </div>
                       {!app.placeholder && (
                         <button
+                          type="button"
                           className="mt-3 text-xs font-medium transition-colors"
                           style={{ color: selected.color }}
                           disabled

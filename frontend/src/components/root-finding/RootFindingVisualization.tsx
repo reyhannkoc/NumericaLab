@@ -321,6 +321,7 @@ export default function RootFindingVisualization({ method }: Props) {
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((p, i) => (
             <button
+              type="button"
               key={p.label}
               onClick={() => setPresetIdx(i)}
               className={clsx(
@@ -343,11 +344,13 @@ export default function RootFindingVisualization({ method }: Props) {
         </p>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => setStepIdx(0)}
             disabled={stepIdx === 0}
             className="icon-btn disabled:opacity-30"
           >⏮</button>
           <button
+            type="button"
             onClick={() => setStepIdx((v) => Math.max(0, v - 1))}
             disabled={stepIdx === 0}
             className="icon-btn disabled:opacity-30"
@@ -359,11 +362,13 @@ export default function RootFindingVisualization({ method }: Props) {
             />
           </div>
           <button
+            type="button"
             onClick={() => setStepIdx((v) => Math.min(steps.length - 1, v + 1))}
             disabled={stepIdx >= steps.length - 1}
             className="icon-btn disabled:opacity-30"
           >▶</button>
           <button
+            type="button"
             onClick={() => setStepIdx(steps.length - 1)}
             disabled={stepIdx >= steps.length - 1}
             className="icon-btn disabled:opacity-30"

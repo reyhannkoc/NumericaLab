@@ -49,6 +49,7 @@ export default function ComparisonCenter() {
             <div className="flex flex-col gap-1">
               {CATEGORIES.map((c) => (
                 <button
+                  type="button"
                   key={c.id}
                   onClick={() => updateParams({ category: c.id, selectedMethodIds: [] })}
                   className={clsx(
@@ -155,6 +156,7 @@ export default function ComparisonCenter() {
           {/* Run / Reset */}
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={run}
               disabled={status === 'running' || params.selectedMethodIds.length === 0}
               className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
@@ -162,7 +164,7 @@ export default function ComparisonCenter() {
               {status === 'running' ? 'Running…' : 'Compare All'}
             </button>
             {status !== 'idle' && (
-              <button onClick={reset} className="px-4 py-2 rounded-lg text-sm glass-card text-slate-400 hover:text-white">
+              <button type="button" onClick={reset} className="px-4 py-2 rounded-lg text-sm glass-card text-slate-400 hover:text-white">
                 Reset
               </button>
             )}

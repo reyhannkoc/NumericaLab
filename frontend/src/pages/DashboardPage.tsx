@@ -76,6 +76,7 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-white">Your Progress</h1>
         </div>
         <button
+          type="button"
           onClick={() => { if (window.confirm('Reset all progress? This cannot be undone.')) resetProgress() }}
           className="text-xs text-slate-500 hover:text-rose-400 transition-colors px-3 py-1.5 rounded border border-surface-border hover:border-rose-500/40"
         >

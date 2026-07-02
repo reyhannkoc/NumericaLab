@@ -123,6 +123,7 @@ export default function FloatVisualizationSection() {
           <div className="flex items-center gap-1 flex-wrap">
             {PRESETS.map((p) => (
               <button
+                type="button"
                 key={p.label}
                 onClick={() => setInputStr(String(p.value))}
                 className="px-2 py-1 rounded text-xs font-mono bg-surface-card border border-surface-border text-slate-300 hover:border-brand-500/50 hover:text-white transition-all"
@@ -134,6 +135,7 @@ export default function FloatVisualizationSection() {
 
           {/* Conversion toggle */}
           <button
+            type="button"
             onClick={() => setShowConversion((v) => !v)}
             className="ml-auto px-3 py-1 rounded text-xs border border-surface-border text-slate-400 hover:text-white hover:border-brand-500/50 transition-colors"
           >
@@ -147,6 +149,7 @@ export default function FloatVisualizationSection() {
         <div className="flex">
           {PRECISION_ORDER.map((p) => (
             <button
+              type="button"
               key={p}
               onClick={() => setSelected(p)}
               className={clsx(

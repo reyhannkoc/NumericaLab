@@ -96,6 +96,7 @@ export default function FormulaExplorer() {
                     </p>
                     {EXPLORER_FORMULAS.filter((f) => f.category === cat).map((f) => (
                       <button
+                        type="button"
                         key={f.id}
                         onClick={() => handleFormulaChange(f.id)}
                         className={clsx(

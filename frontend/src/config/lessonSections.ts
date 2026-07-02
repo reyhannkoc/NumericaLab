@@ -49,13 +49,6 @@ export const LESSON_SECTIONS: SectionMeta[] = [
     description:  'Animated walkthrough of the algorithm',
   },
   {
-    id:           'playground',
-    label:        'Interactive Playground',
-    shortLabel:   'Play',
-    icon:         '🎮',
-    description:  'Experiment with your own inputs and presets',
-  },
-  {
     id:           'algorithm',
     label:        'Algorithm Execution',
     shortLabel:   'Steps',

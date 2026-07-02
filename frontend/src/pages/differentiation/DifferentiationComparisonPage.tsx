@@ -174,6 +174,7 @@ export default function DifferentiationComparisonPage() {
         <div className="flex flex-wrap gap-2">
           {CASE_STUDIES.map((c, i) => (
             <button
+              type="button"
               key={c.id}
               onClick={() => { setCaseIdx(i); setCompare(null) }}
               className={clsx(
@@ -196,6 +197,7 @@ export default function DifferentiationComparisonPage() {
           <div className="flex flex-wrap gap-1.5">
             {H_SWEEP.map((hv) => (
               <button
+                type="button"
                 key={hv}
                 onClick={() => { setH(hv); setCompare(null) }}
                 className={clsx(
@@ -212,6 +214,7 @@ export default function DifferentiationComparisonPage() {
         </div>
 
         <button
+          type="button"
           onClick={handleRun}
           disabled={loading}
           className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
@@ -393,6 +396,7 @@ export default function DifferentiationComparisonPage() {
         {challenges.map((ch) => (
           <div key={ch.id} className="glass-card overflow-hidden">
             <button
+              type="button"
               onClick={() => setExpanded(expanded === ch.id ? null : ch.id)}
               className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-surface-hover/20 transition-colors"
             >
