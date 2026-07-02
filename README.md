@@ -2,22 +2,24 @@
 
 **An interactive, browser-based platform for learning Numerical Methods through visualizations, step-by-step animations, and engineering case studies.**
 
-NumericaLab presents each numerical algorithm as a complete educational chapter: motivation → theory → mathematics → interactive visualization → animated step-by-step → playground → engineering applications → practice problems. No database. No login. Just open it and learn.
+NumericaLab presents each numerical algorithm as a complete educational chapter: motivation → theory → mathematics → interactive visualization → animated step-by-step walkthrough → algorithm execution table → engineering applications → practice problems. No database. No login. Just open it and learn.
+
+> **Stability note:** as of the final submission build, every lesson's Step-by-Step Animation and Algorithm Execution table runs entirely on predefined demonstration data computed in the browser — they load instantly and never depend on the backend. Live, backend-driven computation (type any expression, run any method) is still available in the **Comparison Center** pages and the **Numerical Laboratory**.
 
 ---
 
 ## Features
 
 - **10 complete learning modules** — Floating Point, Root Finding, Interpolation, Differentiation, Integration, Linear Systems, LU Decomposition, Optimization, ODEs, Performance Analysis
-- **Universal Lesson Framework** — every lesson follows a consistent 16-section structure with a sticky progress sidebar, MathJax-rendered LaTeX, and live error/performance indicators
-- **Interactive Playground** — enter any mathematical expression, adjust parameters, and see the algorithm execute with a full iteration table
-- **Step Animation** — play, pause, step forward/backward through each iteration; method-specific visuals (bisection bracket, Newton tangent line, secant line)
+- **Universal Lesson Framework** — every lesson follows a consistent section structure (motivation, theory, math foundation, visualization, animation, algorithm execution, error analysis, performance, comparison, engineering applications, common mistakes, practice, challenges, summary) with a sticky progress sidebar and MathJax-rendered LaTeX
+- **Step-by-Step Animation** — play, pause, step forward/backward through each iteration; method-specific visuals (bisection bracket, Newton tangent line, secant line). Runs on predefined demonstration data computed client-side — loads instantly, no backend call required
+- **Algorithm Execution table** — full iteration table for the demonstration problem, shown alongside the animation, also self-contained and instant-loading
 - **Educational Visualization** — static concept walkthrough computed locally in the browser with 5 preset functions and step-by-step controls
-- **Root Finding Comparison Center** — race Bisection, Newton–Raphson, and Secant on the same equation with live convergence graphs, performance bar charts, and winner badges
+- **Root Finding Comparison Center** — race Bisection, Newton–Raphson, and Secant on the same equation with live convergence graphs, performance bar charts, and winner badges (this is where live, backend-driven "type any expression" computation lives)
 - **5 Engineering Case Studies per module** — IRR/NPV, diode circuits, Kepler's equation, implied volatility, power flow, chemical equilibrium, structural deflection
 - **Numerical Laboratory** — 5 standalone labs: Algorithm Comparison, Error Analysis, Benchmark Center, Engineering Explorer, Formula Explorer
 - **Dark theme** — glass-card UI with Tailwind CSS, Framer Motion animations, Plotly.js charts
-- **No database** — all computation is performed on-demand by the FastAPI backend using NumPy, SciPy, and SymPy
+- **No database** — the FastAPI backend (NumPy, SciPy, SymPy) powers the Comparison Center and Laboratory; lesson pages themselves need no backend at all
 
 ---
 
@@ -58,17 +60,20 @@ NumWeb/
 ├── frontend/                  # React + TypeScript SPA
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── lesson/        # Universal Lesson Framework (16 sections, LOCKED)
+│   │   │   ├── lesson/        # Universal Lesson Framework (LOCKED)
 │   │   │   │   ├── LessonPage.tsx          # Orchestrator — wraps every lesson
-│   │   │   │   ├── sections/               # Header, Theory, MathFoundation, …
+│   │   │   │   ├── sections/               # Header, Theory, MathFoundation, StepAnimation, AlgorithmExecution, …
 │   │   │   │   └── shared/                 # SectionWrapper, SectionHeader, sidebar
-│   │   │   ├── root-finding/  # Root Finding shared render-prop components
+│   │   │   ├── root-finding/  # RootFindingVisualization, RootFindingStepAnimation, RootFindingAlgorithm
+│   │   │   │   #   (per-module *Animation / *Algorithm components are self-contained —
+│   │   │   │   #    they take only a `method` prop and compute their own demo data,
+│   │   │   │   #    often sharing a `*DemoData.ts` module between the two)
 │   │   │   ├── floating-point/# Floating Point visualizations
-│   │   │   ├── laboratory/    # Lab-specific components
+│   │   │   ├── laboratory/    # Lab-specific components (live backend calls)
 │   │   │   └── ui/            # Button, Card, …
 │   │   ├── config/
 │   │   │   ├── lessons/       # LessonConfig objects (bisection.ts, …)
-│   │   │   ├── lessonSections.ts           # 16-section registry (FIXED ORDER)
+│   │   │   ├── lessonSections.ts           # Section registry (FIXED ORDER)
 │   │   │   └── laboratory.ts
 │   │   ├── pages/
 │   │   │   ├── root-finding/  # BisectionPage, NewtonRaphsonPage, SecantPage, RootComparisonPage
@@ -77,7 +82,7 @@ NumWeb/
 │   │   │   └── …              # One folder per module
 │   │   ├── hooks/
 │   │   │   └── useAnimation.ts# Frame-based animation controller
-│   │   ├── services/
+│   │   ├── services/           # Used only by Comparison Center pages + Laboratory
 │   │   │   ├── api.ts         # Axios base instance
 │   │   │   └── rootFindingService.ts
 │   │   ├── types/
@@ -226,15 +231,15 @@ The backend exposes 10 REST endpoints under `/api/`:
 | # | Module | Status |
 |---|---|---|
 | 1 | Floating Point Error Analysis | Complete |
-| 2 | Root Finding (Bisection, Newton–Raphson, Secant) | Complete |
-| 3 | Interpolation | Planned |
-| 4 | Numerical Differentiation | Planned |
-| 5 | Numerical Integration | Planned |
-| 6 | Linear Systems | Planned |
-| 7 | LU Decomposition | Planned |
-| 8 | Optimization | Planned |
-| 9 | Ordinary Differential Equations | Planned |
-| 10 | Performance Analysis | Planned |
+| 2 | Root Finding (Bisection, Newton–Raphson, Secant, Fixed-Point) | Complete |
+| 3 | Interpolation (Lagrange, Newton Divided Diff, Cubic Spline) | Complete |
+| 4 | Numerical Differentiation (Forward, Backward, Central, Richardson) | Complete |
+| 5 | Numerical Integration (Trapezoidal, Simpson's, Gaussian Quadrature) | Complete |
+| 6 | Linear Systems (Gaussian Elimination, Gauss-Seidel, Jacobi) | Complete |
+| 7 | LU Decomposition (LU, Cholesky) | Complete |
+| 8 | Optimization (Golden Section, Gradient Descent) | Complete |
+| 9 | Ordinary Differential Equations (Euler, RK4) | Complete |
+| 10 | Performance Analysis / Numerical Laboratory | Complete |
 
 ---
 
@@ -244,7 +249,7 @@ The backend exposes 10 REST endpoints under `/api/`:
 - **Dark/light theme toggle** — currently dark-only
 - **Mobile optimization** — responsive breakpoints for all Plotly charts
 - **Export results** — download iteration tables as CSV and charts as PNG
-- **Python notebook integration** — export playground sessions as Jupyter notebooks
+- **Bring back a per-lesson live playground** — behind a feature flag, reusing the Comparison Center's backend calls, once reliability/error-handling hardening is done
 - **User progress tracking** — local-storage-based lesson completion indicators
 - **Additional methods** — Müller's method, Brent's method, secant with Illinois modification
 - **3D surface visualization** — extend Newton's method to 2D systems

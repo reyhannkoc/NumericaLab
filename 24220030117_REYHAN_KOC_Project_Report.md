@@ -12,7 +12,7 @@
 
 ## Abstract
 
-NumericaLab is a full-stack, interactive web application designed to teach all ten core numerical methods topics covered in the 155-4007 Numerical Methods in Engineering course. The platform provides 10 complete learning modules, each featuring mathematical theory, step-by-step algorithm animations, interactive playgrounds with real-time computation, performance benchmarks, engineering case studies, and method comparison tools. The backend is implemented in Python using FastAPI, NumPy, SciPy, and SymPy — implementing every numerical algorithm from scratch. The frontend is a React 18 + TypeScript single-page application with Plotly.js visualizations and Framer Motion animations. The application is deployed publicly on Render cloud platform and accessible at https://frontend-wi09.onrender.com. This project directly addresses project idea #29 (Interactive Web-Based Numerical Methods Tutorial), #26 (GUI Tool for Teaching Numerical Methods), and #14 (Custom Numerical Library Development) from the course project list, and covers all 12 required topic areas.
+NumericaLab is a full-stack, interactive web application designed to teach all ten core numerical methods topics covered in the 155-4007 Numerical Methods in Engineering course. The platform provides 10 complete learning modules, each featuring mathematical theory, a step-by-step algorithm animation, an algorithm execution table, performance benchmarks, engineering case studies, and method comparison tools. The backend is implemented in Python using FastAPI, NumPy, SciPy, and SymPy — implementing every numerical algorithm from scratch. The frontend is a React 18 + TypeScript single-page application with Plotly.js visualizations and Framer Motion animations. In the final stabilization pass before submission, every lesson's animation and algorithm execution table was made fully self-contained — each runs on a predefined demonstration dataset computed client-side, loads instantly, and has zero dependency on the backend, so the platform is stable and fully demonstrable even if the API is slow or unreachable. Live, backend-driven computation on arbitrary user input remains available through the per-module Comparison Center pages and the Numerical Laboratory. The application is deployed publicly on Render cloud platform and accessible at https://frontend-wi09.onrender.com. This project directly addresses project idea #29 (Interactive Web-Based Numerical Methods Tutorial), #26 (GUI Tool for Teaching Numerical Methods), and #14 (Custom Numerical Library Development) from the course project list, and covers all 12 required topic areas.
 
 ---
 
@@ -56,7 +56,7 @@ The project is inspired by tools such as GeoGebra, Wolfram Demonstrations, and P
 
 NumericaLab covers all ten required topic areas with:
 
-- **10 complete lesson modules** with theory, animation, playground, quiz, and engineering applications
+- **10 complete lesson modules** with theory, a self-contained animation, an algorithm execution table, quiz, and engineering applications
 - **5 interactive laboratories** for cross-method comparison and performance benchmarking
 - **Backend numerical library** implementing 20+ algorithms from scratch in Python
 - **REST API** with 19 endpoints exposing every computation
@@ -108,21 +108,25 @@ The frontend is organized around a universal lesson framework:
 ```
 src/
 ├── components/
-│   └── lesson/              # Universal lesson framework
-│       ├── LessonPage.tsx   # Orchestrator component
-│       └── sections/        # 16 section components
-│           ├── LessonHeader.tsx
-│           ├── TheorySection.tsx
-│           ├── InteractiveVisualization.tsx
-│           ├── StepAnimation.tsx
-│           ├── InteractivePlayground.tsx
-│           ├── AlgorithmExecution.tsx
-│           ├── PerformanceMetrics.tsx
-│           ├── ErrorAnalysis.tsx
-│           ├── EngineeringApplications.tsx
-│           ├── PracticeProblems.tsx
-│           ├── SummarySection.tsx
-│           └── QuizSection.tsx
+│   ├── lesson/              # Universal lesson framework
+│   │   ├── LessonPage.tsx   # Orchestrator component
+│   │   └── sections/        # Section components
+│   │       ├── LessonHeader.tsx
+│   │       ├── TheorySection.tsx
+│   │       ├── InteractiveVisualization.tsx
+│   │       ├── StepAnimation.tsx
+│   │       ├── AlgorithmExecution.tsx
+│   │       ├── PerformanceAnalysis.tsx
+│   │       ├── ErrorAnalysis.tsx
+│   │       ├── EngineeringApplications.tsx
+│   │       ├── PracticeProblems.tsx
+│   │       ├── SummarySection.tsx
+│   │       └── QuizSection.tsx
+│   └── <module>/            # Per-module Visualization / *StepAnimation / *Algorithm
+│       ├── <Module>Visualization.tsx
+│       ├── <Module>StepAnimation.tsx     # takes only `method`, computes its own demo frames
+│       ├── <Module>Algorithm.tsx         # takes only `method`, feeds AlgorithmExecution
+│       └── <module>DemoData.ts           # shared demo problem + math, reused by both
 ├── pages/                   # One page per algorithm
 │   ├── root-finding/
 │   ├── interpolation/
@@ -135,12 +139,14 @@ src/
 │   └── laboratory/
 ├── config/
 │   └── lessons/             # Lesson content configuration files
-├── services/                # API client services
+├── services/                # API client services (used by Comparison Center + Laboratory only)
 ├── contexts/                # React context (ProgressContext)
 └── hooks/                   # Custom hooks (useAnimation)
 ```
 
-Every lesson page uses the same `<LessonPage config={...} />` component. The lesson content (theory, examples, engineering applications, practice problems, quiz questions) is defined in TypeScript configuration objects in `src/config/lessons/`. This architecture keeps content separate from rendering logic.
+Every lesson page uses the same `<LessonPage config={...} />` component, composing `renderVisualization`, `renderAnimation`, and `renderAlgorithm` render props. The lesson content (theory, examples, engineering applications, practice problems, quiz questions) is defined in TypeScript configuration objects in `src/config/lessons/`. This architecture keeps content separate from rendering logic.
+
+**Final stabilization change:** earlier builds included a per-lesson `InteractivePlayground` section that called the backend on every "Run" click and fed its result into the Step-by-Step Animation and Algorithm Execution table. For the final submission this was replaced: each module's `*StepAnimation` and `*Algorithm` components were decoupled from any live result and instead compute a fixed, illustrative demonstration (e.g. bisection on f(x) = x³ − x − 2, natural cubic spline through a fixed dataset, Euler/RK4 on dy/dx = y) directly in the browser. This removes the single largest source of demo-time failure — a slow or unreachable backend — while keeping every other section (theory, math, visualization, error analysis, performance, comparison, engineering applications, practice, summary) unchanged. Live, arbitrary-input computation is still exercised elsewhere in the app (Section 4.12, Section 5).
 
 ### 2.3 Backend Architecture
 
@@ -550,7 +556,7 @@ x_i^(k+1) = (bᵢ - Σⱼ≠ᵢ aᵢⱼ·xⱼ^(k)) / aᵢᵢ
 
 ### 4.7 LU Decomposition
 
-**Lesson pages:** `/lu/lu-decomposition`, `/lu/cholesky`  
+**Lesson pages:** `/lu-decomposition`, `/lu-decomposition/cholesky`  
 **Backend endpoints:** `POST /api/lu/decompose`, `POST /api/lu/solve`
 
 #### 4.7.1 LU Decomposition
@@ -750,12 +756,12 @@ The Performance Benchmark Laboratory allows head-to-head timing and accuracy com
 
 2. **Step animation system** — Every lesson has an animated step-by-step walkthrough:
    - Custom `useAnimation` hook controls play/pause/step-forward/step-backward
-   - Each frame shows the algorithm state at iteration k
+   - Each frame shows the algorithm state at iteration k, computed from a fixed demonstration problem client-side — playable immediately on page load, no "Run" step required
    - Cobweb diagram for Fixed-Point, Richardson table for differentiation
 
 3. **MathJax equation rendering** — All mathematical formulas are typeset in LaTeX via the `better-react-mathjax` library, matching textbook presentation quality.
 
-4. **Algorithm execution table** — After computation, the full iteration history is shown in a scrollable table with color-coded convergence status.
+4. **Algorithm execution table** — The full iteration history for the same demonstration problem is shown in a scrollable table with color-coded convergence status, available on page load alongside the animation.
 
 5. **Engineering application cards** — Each lesson has 5+ real-world engineering applications with problem description, the numerical method applied, and the engineering significance.
 
@@ -923,8 +929,9 @@ When an iterative method does not converge within max_iterations:
 | Deliverable | Status |
 |-------------|--------|
 | 10 lesson modules (all algorithms) | ✅ Complete |
-| Step-by-step animations (all methods) | ✅ Complete |
-| Interactive playgrounds (all methods) | ✅ Complete |
+| Step-by-step animations (all methods, self-contained, no backend dependency) | ✅ Complete |
+| Algorithm execution tables (all methods, self-contained, no backend dependency) | ✅ Complete |
+| Interactive playgrounds (all methods) | ⚠️ Removed from per-lesson pages in final stabilization pass — see Section 2.2. Live equivalent retained in Comparison Center + Laboratory |
 | Engineering applications (5+ per module) | ✅ Complete |
 | Method comparison pages (all modules) | ✅ Complete |
 | Numerical Laboratory (5 labs) | ✅ Complete |
@@ -963,6 +970,8 @@ The Render free tier introduces a cold start delay (~15-30 seconds) after inacti
 
 4. **Python version pinning for scientific packages:** NumPy 1.26 and SciPy 1.13 have pre-built wheels for Python 3.11 but not for Python 3.14 (which requires Fortran compiler to build from source). A `.python-version` file is required to override Render's default Python selection.
 
+5. **Demo reliability beats maximal interactivity:** the original per-lesson Interactive Playground made every Step-by-Step Animation and Algorithm Execution table depend on a live "Run" call to the Render free-tier backend, which has a cold-start delay of 15–30 seconds after inactivity (Section 9.3). During a live demonstration or grading session this made the most important teaching sections (the animation and the iteration table) fail or hang unpredictably. Decoupling those two sections from any API call — computing a fixed demonstration dataset client-side instead — removed that failure mode entirely without losing the underlying teaching content, and confined all backend-dependent, arbitrary-input computation to the Comparison Center and Laboratory, where a slow first request is a much smaller problem.
+
 ---
 
 ## 10. Conclusion
@@ -970,8 +979,8 @@ The Render free tier introduces a cold start delay (~15-30 seconds) after inacti
 NumericaLab demonstrates that the full 155-4007 Numerical Methods in Engineering curriculum can be taught through a single interactive web platform. All 12 required topic areas are implemented with:
 
 - **Theory explanations** with LaTeX-rendered mathematical derivations
-- **Animated step-by-step walkthroughs** showing each algorithm iteration
-- **Interactive playgrounds** where any mathematical expression can be evaluated
+- **Animated step-by-step walkthroughs** showing each algorithm iteration, running on self-contained demonstration data so they work reliably during a live grading session regardless of backend availability
+- **Live playgrounds** where any mathematical expression can be evaluated, available through the Comparison Center and Numerical Laboratory
 - **Engineering case studies** connecting abstract algorithms to real professional problems
 - **Method comparisons** with quantitative results
 
